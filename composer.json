@@ -1,0 +1,32 @@
+{
+    "name": "dillingham/list-request",
+    "description": "Laravel index filters & validation",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brian Dillingham",
+            "email": "brian@dillingham.dev"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Dillingham\\ListRequest\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dillingham\\ListRequest\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dillingham\\ListRequest\\ListRequestProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.17"
+    }
+}

@@ -1,0 +1,58 @@
+<?php
+
+namespace {{ namespace }};
+
+use Dillingham\ListRequest\Filter;
+use Dillingham\ListRequest\ListRequest;
+use Dillingham\ListRequest\Range;
+
+class {{ class }} extends ListRequest
+{
+    /**
+     * The searchable columns,
+     *
+     * @var array
+     */
+    public $search = [];
+
+    /**
+     * The sortable columns.
+     *
+     * @var array
+     */
+    public $sort = ['created_at'];
+
+    /**
+     * Define the query.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function builder()
+    {
+        return Model::query();
+    }
+
+    /**
+     * Define the filters.
+     *
+     * @return array
+     */
+    public function filters()
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+     * Define the ranges
+     *
+     * @return array
+     */
+    public function ranges()
+    {
+        return [
+            //
+        ];
+    }
+}
