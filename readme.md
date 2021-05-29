@@ -25,7 +25,7 @@ And so much more! This package solves many common scenarios with a minimal and s
 
 ---
 
-[Install](#install) | [Configuration](#configuration) | [Cookbook](#cookbook)
+[Install](#install) | [Search](#search) | [Sort](#sort) | [Filters](#filters) | [Ranges](#ranges) | [Helpers](#helpers)
 
 ---
 
@@ -383,7 +383,8 @@ Multiple ranges are supported; same columns are invalid.
 
 ---
 
-# Cookbook
+# Helpers
+
 Here are some scenarios and recipies:
 
 ## Adding authentication restriction
