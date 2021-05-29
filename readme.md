@@ -1,7 +1,5 @@
 # ListRequest
 
-Add search, sort, filters & more with a typehint
-
 <p>
     <a href="https://github.com/dillingham/list-request/actions">
         <img src="https://github.com/dillingham/list-request/workflows/tests/badge.svg" alt="Build Status">
@@ -17,7 +15,19 @@ Add search, sort, filters & more with a typehint
     </a>
 </p>
 
+Add search, sort, filters & more with a typehint in your controller like a [FormRequest](https://laravel.com/docs/validation#form-request-validation).
+
+Remove all that logic from your models / controllers, and validate your query parameters!
+
+✅ Search relationships ✅ Filter date ranges ✅ Sort by relationship counts ✅ Filter trashed 
+
+And so much more! This package solves many common scenarios with a minimal and simple setup.
+
+---
+
 [Install](#install) | [Configuration](#configuration) | [Cookbook](#cookbook)
+
+---
 
 # Install
 Add to a Laravel project using composer:
@@ -30,7 +40,23 @@ Create a request class using artisan `--list`:
 ```
 php artisan make:request ListArticleRequest --list
 ``` 
-Which produces the following class:
+
+Then typehint in your controller and call `->results()` to execute.
+
+```php
+<?php
+
+class ArticleController
+{
+    public function index(ListArticleRequest $request) 
+    {
+        return view('articles.index', [
+            'articles' => $request->results() 
+        ]);
+    }
+}
+```
+And here is an example of a configured ListRequest:
 
 ```php
 <?php
@@ -48,14 +74,14 @@ class ListArticleRequest extends ListRequest
      *
      * @var array
      */
-    public $search = [];
+    public $search = ['title', 'comments.body'];
 
     /**
      * The sortable columns.
      *
      * @var array
      */
-    public $sort = ['created_at'];
+    public $sort = ['created_at', 'comments'];
 
     /**
      * Define the query.
@@ -64,7 +90,7 @@ class ListArticleRequest extends ListRequest
      */
     public function builder()
     {
-        return Model::query();
+        return Article::query();
     }
 
     /**
@@ -75,7 +101,9 @@ class ListArticleRequest extends ListRequest
     public function filters()
     {
         return [
-            //
+            Filter::make('author')->related(),
+            Filter::make('published_at')->dateRange(),
+            Filter::make('comments')->countRange(),
         ];
     }
 
@@ -87,28 +115,26 @@ class ListArticleRequest extends ListRequest
     public function ranges()
     {
         return [
-            //
+            Range::make('this-week')
+                ->between('published_at', [
+                    today()->subWeek(), 
+                    today()
+                ])
         ];
     }
 }
 ```
-Change `Model::query()` to the actual model: `Article::query()`
 
-Then typehint in your controller and call `->results()` to execute.
+---
 
-```php
-public function index(ListArticleRequest $request) 
-{
-    return view('articles.index', [
-        'articles' => $request->results() 
-    ]);
-}
-```
-Note: all results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.
 
 # Configuration
 
-It is very simple to configure ListRequest objects.
+Below are the many options available for configuring ListRequests.
+
+#### The results
+
+All results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.
 
 ## Search
 Define columns or relationship columns to search:
@@ -121,6 +147,8 @@ public $search = ['title', 'comments.body'];
 /articles?search=laravel
 ```
 
+---
+
 ## Sort
 
 Define which columns are sortable:
@@ -132,13 +160,13 @@ public $sort = ['name', 'created_at'];
 /articles?sort=created_at
 ```
 
-## Sort Desc
+#### Descending Order
 Change `sort` to `sort-desc` changes it's direction.
 ```
 /articles?sort-desc=created_at
 ```
 
-## Sort relations
+#### Relationships
 Sort relationship counts, relationship columns and or alias them:
 
 ```php
@@ -149,6 +177,8 @@ public $sort = [
 ];
 ```
 `sort=comments` `sort=upvotes` `sort=disliked`
+
+---
 
 ## Filters
 
@@ -194,7 +224,7 @@ Results where a number has a min and max value:
 Filter::make('length')->range(),
 ```
 ```
-/articles?lenght:min=5&lenght:max=100
+/articles?length:min=5&length:max=100
 ```
 
 ### date
@@ -310,6 +340,8 @@ Filter::make('published')->scopeBoolean(),
 
 >  `false` produces the opposite and returns all results that are not in the scope
 
+---
+
 ## Ranges
 
 Ranges are pre-defined start and finish values to filter between. 
@@ -348,6 +380,8 @@ Multiple ranges are supported; same columns are invalid.
 ```
 /articles?range[]=today&range[]=lengthy
 ```
+
+---
 
 # Cookbook
 Here are some scenarios and recipies:
