@@ -68,6 +68,12 @@ class ListPostRequest extends ListRequest
                 })->when('100', function ($query) {
                     $query->where('length', '100');
                 }),
+
+            Filter::make('length')
+                ->between('small', [1,10])
+                ->between('medium', [11,20])
+                ->between('large', [21,30])
+                ->as('length-range')
         ];
     }
 

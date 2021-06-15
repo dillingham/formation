@@ -298,6 +298,22 @@ class Filter
     }
 
     /**
+     * Make a between filter type.
+     *
+     * @return $this
+     */
+    public function between($name, array $range)
+    {
+        $this->withQuery(function ($query) use($name, $range) {
+            if ($this->value === $name) {
+                $query->whereBetween($this->key, $range);
+            }
+        });
+
+        return $this;
+    }
+
+    /**
      * Make a date filter type.
      *
      * @return $this

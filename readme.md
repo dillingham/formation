@@ -19,7 +19,7 @@ Add search, sort, filters & more with a typehint in your controller like a [Form
 
 Remove all that logic from your models / controllers, and validate your query parameters!
 
-✅ Search relationships ✅ Filter date ranges ✅ Sort by relationship counts ✅ Filter trashed 
+✅ Search relationships ✅ Filter date ranges ✅ Sort by relationship counts ✅ Filter trashed
 
 And so much more! This package solves many common scenarios with a minimal and simple setup.
 
@@ -39,7 +39,7 @@ Create a request class using artisan `--list`:
 
 ```
 php artisan make:request ListArticleRequest --list
-``` 
+```
 
 Then typehint in your controller and call `->results()` to execute.
 
@@ -48,10 +48,10 @@ Then typehint in your controller and call `->results()` to execute.
 
 class ArticleController
 {
-    public function index(ListArticleRequest $request) 
+    public function index(ListArticleRequest $request)
     {
         return view('articles.index', [
-            'articles' => $request->results() 
+            'articles' => $request->results()
         ]);
     }
 }
@@ -117,7 +117,7 @@ class ListArticleRequest extends ListRequest
         return [
             Range::make('this-week')
                 ->between('published_at', [
-                    today()->subWeek(), 
+                    today()->subWeek(),
                     today()
                 ])
         ];
@@ -171,8 +171,8 @@ Sort relationship counts, relationship columns and or alias them:
 
 ```php
 public $sort = [
-    'comments', 
-    'comments.upvotes', 
+    'comments',
+    'comments.upvotes',
     'comments.downvotes as disliked',
 ];
 ```
@@ -187,7 +187,7 @@ Enable parameters for a list by adding to it's `filters()`:
 public function filters()
 {
     return [
-        Filter::make('active')->boolean(),        
+        Filter::make('active')->boolean(),
     ];
 }
 ```
@@ -227,6 +227,18 @@ Filter::make('length')->range(),
 /articles?length:min=5&length:max=100
 ```
 
+### between
+Results by a named range set
+```php
+Filter::make('length')
+    ->between('small', [1, 100])
+    ->between('medium', [101, 200])
+    ->between('large', [201, 300])
+```
+```
+/articles?length=small
+```
+
 ### date
 Results where a specific date is filtered by:
 ```php
@@ -250,7 +262,7 @@ Results where a group of columns are searched
 ```php
 Filter::make('written-by')->search([
     'author_id',
-    'author.name', 
+    'author.name',
     'author.username'
 ]),
 ```
@@ -322,7 +334,7 @@ Filter::make('published')->scope(),
 ```
 
 ```php
-public function scopePublished($query) 
+public function scopePublished($query)
 {
     $query->whereNotNull('published_at');
 }
@@ -344,7 +356,7 @@ Filter::make('published')->scopeBoolean(),
 
 ## Ranges
 
-Ranges are pre-defined start and finish values to filter between. 
+Ranges are pre-defined start and finish values to filter between.
 
 Here is how to define: `Today`, `7 Days`, `This Month`:
 
@@ -403,7 +415,7 @@ Filter::make('status_column')->as('status'),
 /articles?status=active
 ```
 
-## Adding a multiple values 
+## Adding a multiple values
 
 Allow the filter to accept many values for the same key
 ```php
@@ -445,7 +457,7 @@ Useful for defining routes with filters: `/active`
 public function active(ListArticleRequest $request)
 {
     $request->merge(['status' => 'active']);
-    
+
     return $request->results();
 }
 ```
@@ -453,4 +465,4 @@ public function active(ListArticleRequest $request)
 # Author
 
 
-Hi, [@im_brian_d](https://twitter.com/im_brian_d), software developer and Laravel enthusiast. 
+Hi, [@im_brian_d](https://twitter.com/im_brian_d), software developer and Laravel enthusiast.

@@ -382,6 +382,25 @@ class ListRequestTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
+    public function test_filtering_between_sets()
+    {
+        $small = Post::create(['length' => 9]);
+        $medium = Post::create(['length' => 19]);
+        $large = Post::create(['length' => 29]);
+
+        $this->get('/posts?length-range=small')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $small->id);
+
+        $this->get('/posts?length-range=medium')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $medium->id);
+
+            $this->get('/posts?length-range=large')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $large->id);
+    }
+
     public function test_filtering_scopes()
     {
         Post::factory()->create(['status' => 'active']);
