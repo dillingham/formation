@@ -449,6 +449,15 @@ Filter::make('published')
     }),
 ```
 
+## Converting to cents
+When the public value is in dollars and db is in cents
+```php
+Filter::make('price')->cents()
+```
+```
+/products?price=100 // where('price', 10000)
+```
+
 ## Adding hardcoded filters
 
 Useful for defining routes with filters: `/active`

@@ -880,6 +880,20 @@ class ListRequestTest extends TestCase
             ->assertJsonPath('data.0.id', $two->id);
     }
 
+    public function test_converting_to_cents()
+    {
+        $one = Post::factory()->create(['length' => '10000']);
+        $two = Post::factory()->create(['length' => '20000']);
+
+        $this->get('/posts?money=100')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $one->id);
+
+        $this->get('/posts?money=200')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $two->id);
+    }
+
     public function test_list_requests_have_defaults()
     {
         $request = (new ListRequest());

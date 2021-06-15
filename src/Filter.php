@@ -96,6 +96,13 @@ class Filter
     public $multiple = false;
 
     /**
+     * The value is in cents.
+     *
+     * @var
+     */
+    public $cents = false;
+
+    /**
      * The query method was called.
      *
      * @var
@@ -306,6 +313,7 @@ class Filter
     {
         $this->withQuery(function ($query) use($name, $range) {
             if ($this->value === $name) {
+                sort($range);
                 $query->whereBetween($this->key, $range);
             }
         });
@@ -596,6 +604,18 @@ class Filter
     }
 
     /**
+     * Convert dollars (100) into cents (10000).
+     *
+     * @return $this
+     */
+    public function cents()
+    {
+        $this->cents = true;
+
+        return $this;
+    }
+
+    /**
      * Set the query callback.
      *
      * @param $callback
@@ -682,7 +702,7 @@ class Filter
         if (count($this->modifiers) == 0 && count($parameters) == 1) {
             $this->modifier = array_keys($parameters)[0];
             $this->value = array_values($parameters)[0];
-
+            $this->value = $this->applyCents($this->value);
             return; // no array values needed because its a single value
         }
 
@@ -691,6 +711,8 @@ class Filter
             $this->modifier[] = $modifier;
             $this->value[$modifier] = $value;
         }
+
+        $this->value = $this->applyCents($this->value);
     }
 
     /**
@@ -721,6 +743,29 @@ class Filter
         }
 
         return $query;
+    }
+
+    /**
+     * Apply cents.
+     *
+     * @param $query
+     * @return Builder;
+     */
+    protected function applyCents($value)
+    {
+        if(!$this->cents) {
+            return $value;
+        }
+
+        if(!is_array($value)) {
+            return $value * 100;
+        }
+
+        foreach($value as $k => $v) {
+            $value[$k] = $v * 100;
+        }
+
+        return $value;
     }
 
     /**

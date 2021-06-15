@@ -73,7 +73,9 @@ class ListPostRequest extends ListRequest
                 ->between('small', [1,10])
                 ->between('medium', [11,20])
                 ->between('large', [21,30])
-                ->as('length-range')
+                ->as('length-range'),
+
+            Filter::make('length')->as('money')->cents()
         ];
     }
 
