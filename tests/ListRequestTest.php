@@ -796,10 +796,9 @@ class ListRequestTest extends TestCase
 
     public function test_rules_appending_with_public_key()
     {
-        $filter = Filter::make('append-rules')
+        $filter = Filter::make('other-name', 'append-rules')
             ->options(['1', '2', '3'])
-            ->withRules('gt:2')
-            ->as('other-name');
+            ->withRules('gt:2');
 
         $rules = $filter->getRules();
 

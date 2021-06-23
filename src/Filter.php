@@ -112,41 +112,31 @@ class Filter
     /**
      * Make a filter instance.
      *
-     * @param $key
+     * @param $public
+     * @param $internal
      * @return Filter
      */
-    public static function make($key)
+    public static function make($public, $internal = null)
     {
-        if (in_array($key, ['search', 'per_page', 'sort', 'sort-desc'])) {
+        if (in_array($public, ['search', 'per_page', 'sort', 'sort-desc'])) {
             throw new ReservedException();
         }
 
-        return (new self)->key($key);
+        return (new self)->init($public, $internal);
     }
 
     /**
      * Add the filter key.
      *
-     * @param $key
+     * @param $public
+     * @param $internal
      * @return $this
      */
-    protected function key($key)
+    protected function init($public, $internal = null)
     {
-        $this->key = $key;
-        $this->publicKey = $key;
+        $this->publicKey = $public;
 
-        return $this;
-    }
-
-    /**
-     * Add the public filter key.
-     *
-     * @param $key
-     * @return $this
-     */
-    public function as($key)
-    {
-        $this->publicKey = $key;
+        $this->key = is_null($internal) ? $public : $internal;
 
         return $this;
     }
@@ -351,8 +341,8 @@ class Filter
         $this->modifier('min');
         $this->modifier('max');
 
-        $this->withRules('nullable|date', 'max');
-        $this->withRules('nullable|date', 'min');
+        $this->withRules('nullable|date', "$this->publicKey:max");
+        $this->withRules('nullable|date', "$this->publicKey:min");
 
         $this->withQuery(function ($query) {
             if (isset($this->value['min'], $this->value['max'])) {
@@ -531,14 +521,14 @@ class Filter
      * @param null $modifier
      * @return $this|array
      */
-    public function withRules($rules, $modifier = null)
+    public function withRules($rules, $key = null)
     {
         if (! is_array($rules)) {
             $rules = explode('|', $rules);
         }
 
-        $this->rules[] = function () use ($rules, $modifier) {
-            $key = $modifier ? "{$this->publicKey}:${modifier}" : $this->publicKey;
+        $this->rules[] = function () use ($rules, $key) {
+            $key = is_null($key) ? $this->publicKey : $key;
 
             return  [$key => $rules];
         };
@@ -813,18 +803,20 @@ class Filter
         $this->modifier('max');
 
         $minRules = ['nullable', 'numeric', function ($attribute, $value, $fail) {
-            if ($this->request->filled("{$this->key}:max") && $value > $this->request->input("{$this->key}:max")) {
+            if ($this->request->filled("{$this->publicKey}:max")
+                && $value > $this->request->input("{$this->publicKey}:max")) {
                 $fail('Must be less than max.');
             }
         }];
 
         $maxRules = ['nullable', 'numeric', function ($attribute, $value, $fail) {
-            if ($this->request->filled("{$this->key}:min") && $value < $this->request->input("{$this->key}:min")) {
+            if ($this->request->filled("{$this->publicKey}:min")
+                && $value < $this->request->input("{$this->publicKey}:min")) {
                 $fail('Must be greater than min.');
             }
         }];
 
-        $this->withRules($minRules, 'min');
-        $this->withRules($maxRules, 'max');
+        $this->withRules($minRules, "$this->publicKey:min");
+        $this->withRules($maxRules, "$this->publicKey:max");
     }
 }

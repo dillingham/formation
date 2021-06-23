@@ -44,38 +44,41 @@ class ListPostRequest extends ListRequest
             Filter::make('like')->exists()->auth(),
             Filter::make('length')->range(),
             Filter::make('author')->related(),
-            Filter::make('author')->as('writer')->related()->multiple(),
+            Filter::make('writer', 'author')->related()->multiple(),
             Filter::make('active')->boolean(),
-            Filter::make('active')->as('toggle')->toggle(),
+            Filter::make('toggle', 'active')->toggle(),
             Filter::make('comments')->exists(),
             Filter::make('comments')->count(),
             Filter::make('comments')->countRange(),
             Filter::make('published_at')->date(),
-            Filter::make('published_at')->as('multiple_dates')->date()->multiple(),
+            Filter::make('multiple_dates', 'published_at')->date()->multiple(),
             Filter::make('created_at')->dateRange(),
             Filter::make('status')->options(['active', 'inactive']),
-            Filter::make('status')->as('multiple')->options(['active', 'inactive'])->multiple(),
+            Filter::make('multiple', 'status')->options(['active', 'inactive'])->multiple(),
             Filter::make('value-scope')->scope('status'),
             Filter::make('active-scope')->scope('active'),
             Filter::make('boolean-scope')->scopeBoolean('activeBoolean'),
             Filter::make('trashed')->onlyTrashed(),
             Filter::make('with-trashed')->withTrashed(),
             Filter::make('written-by')->search(['author.name']),
-            Filter::make('length')
-                ->as('article-size')
+            Filter::make('article-size', 'length')
                 ->when('50', function ($query) {
                     $query->where('length', '50');
                 })->when('100', function ($query) {
                     $query->where('length', '100');
                 }),
 
-            Filter::make('length')
+            Filter::make('length-range', 'length')
                 ->between('small', [1,10])
                 ->between('medium', [11,20])
-                ->between('large', [21,30])
-                ->as('length-range'),
+                ->between('large', [21,30]),
 
-            Filter::make('length')->as('money')->cents()
+            Filter::make('length-range', 'length')
+                ->between('small', [1,10])
+                ->between('medium', [11,20])
+                ->between('large', [21,30]),
+
+            Filter::make('money', 'length')->cents(),
         ];
     }
 

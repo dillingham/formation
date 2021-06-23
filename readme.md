@@ -405,14 +405,15 @@ Redirects to route('login') if unauthenticated.
 Filter::make('like')->exists()->auth(),
 ```
 
-## Adding a query parameter name
+## Using a different public key
 
-When the filter key is different than the query parameter
+A url key different from the relationship or column name
 ```php
-Filter::make('status_column')->as('status'),
+Filter::make('status', 'status_id'),
+Filter::make('author', 'activeAuthor'),
 ```
 ```
-/articles?status=active
+/articles?status=1
 ```
 
 ## Adding a multiple values
