@@ -702,18 +702,25 @@ class Filter
     {
         $keys = [];
 
-        if (count($this->modifiers) == 0) {
-            $keys[] = $this->publicKey;
-        }
-
-        foreach ($this->modifiers as $modifier) {
-            $keys[] = "{$this->publicKey}:${modifier}";
+        if (is_array($this->publicKey)) {
+            $keys = $this->publicKey;
+        } elseif (count($this->modifiers)) {
+            foreach ($this->modifiers as $modifier) {
+                $keys[] = "{$this->publicKey}:${modifier}";
+            }
+        } else {
+            $keys = [$this->publicKey];
         }
 
         $parameters = $this->request->only($keys);
 
         if (count($parameters) == 0) {
             return; // don't set value & operator
+        }
+
+        if (is_array($this->publicKey)) {
+            $this->value = $parameters;
+            return;
         }
 
         if (count($this->modifiers) == 0 && count($parameters) == 1) {
