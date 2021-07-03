@@ -5,6 +5,7 @@ namespace Dillingham\ListRequest\Tests\Fixtures;
 use Dillingham\ListRequest\Filter;
 use Dillingham\ListRequest\ListRequest;
 use Dillingham\ListRequest\Range;
+use Illuminate\Support\Facades\DB;
 
 class ListPostRequest extends ListRequest
 {
@@ -79,6 +80,8 @@ class ListPostRequest extends ListRequest
                 ->between('large', [21,30]),
 
             Filter::make('money', 'length')->cents(),
+
+            Filter::radius(),
         ];
     }
 

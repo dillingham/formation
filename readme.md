@@ -352,6 +352,15 @@ Filter::make('published')->scopeBoolean(),
 
 >  `false` produces the opposite and returns all results that are not in the scope
 
+### radius
+Results within a latitude, longtitude & distance.
+```php
+Filter::radius(),
+```
+```
+/users?latitude=40.7517&longitude=-73.9755&distance=10
+```
+
 ---
 
 ## Ranges
