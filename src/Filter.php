@@ -480,6 +480,33 @@ class Filter
     }
 
     /**
+     * Make a radius filter.
+     *
+     * @return $this
+     */
+    public static function radius($maxDistance = 100)
+    {
+        $filter = (new self)->make(['latitude', 'longitude', 'distance']);
+
+        $filter->withRules(['numeric', 'required_with:longitude,latitude', "lte:$maxDistance"], 'distance');
+        $filter->withRules(['numeric', 'required_with:latitude,distance'], 'longitude');
+        $filter->withRules(['numeric', 'required_with:longitude,distance'], 'latitude');
+
+        $filter->withQuery(function ($query) use($filter) {
+            $distance = $filter->value['distance'];
+            $method = 'ST_Distance_Sphere(Point(longitude, latitude), Point(?, ?))';
+            $conversion = '* 0.000621371192';
+
+            $query->whereRaw("$method $conversion < $distance", [
+                $filter->value['longitude'],
+                $filter->value['latitude'],
+            ]);
+        });
+
+        return $filter;
+    }
+
+    /**
      * Register a modifier.
      *
      * @param $modifier
