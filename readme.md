@@ -22,7 +22,7 @@ Remove all that logic from your models / controllers, and auto-validate query pa
 This package solves many common scenarios with a minimal and simple setup.
 
 
-- ✅ Search columns 
+- ✅ Search columns
 - ✅ Search relationships columns
 - ✅ Sort by columns
 - ✅ Sort by relationship columns
@@ -37,7 +37,7 @@ This package solves many common scenarios with a minimal and simple setup.
 - ✅ Filter by within scope
 - ✅ Filter by outside scope
 - ✅ Filter by muliple values
-- ✅ And so much more! 
+- ✅ And so much more!
 
 ---
 
@@ -430,7 +430,7 @@ Filter::make('published')
 ## Converting to cents
 When the public value is in dollars and db is in cents
 ```php
-Filter::make('price')->cents()
+Filter::make('price')->asCents()
 ```
 ```
 /products?price=100 // where('price', 10000)
