@@ -12,6 +12,7 @@ class ListPostRequest extends ListRequest
     public $search = [
         'title',
         'comments.body',
+        'tags.title',
     ];
 
     public $sort = [
@@ -51,6 +52,9 @@ class ListPostRequest extends ListRequest
             Filter::make('comments')->exists(),
             Filter::make('comments')->count(),
             Filter::make('comments')->countRange(),
+            Filter::make('tags')->exists(),
+            Filter::make('tags')->count(),
+            Filter::make('tags')->countRange(),
             Filter::make('published_at')->date(),
             Filter::make('multiple_dates', 'published_at')->date()->multiple(),
             Filter::make('created_at')->dateRange(),

@@ -10,6 +10,7 @@ use Dillingham\ListRequest\Tests\Fixtures\Comment;
 use Dillingham\ListRequest\Tests\Fixtures\Like;
 use Dillingham\ListRequest\Tests\Fixtures\ListPostRequest;
 use Dillingham\ListRequest\Tests\Fixtures\Post;
+use Dillingham\ListRequest\Tests\Fixtures\Tag;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,22 @@ class ListRequestTest extends TestCase
         ]);
 
         $this->get('/posts?search=amazing')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $expected->id);
+    }
+
+    public function test_search_relations_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $rejected = Post::factory()->create();
+        $expected = Post::factory()->create();
+
+        $rejected->tags()->attach([$tag2->id]);
+        $expected->tags()->attach([$tag1->id]);
+
+        $this->get('/posts?search=php')
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $expected->id);
     }
@@ -619,6 +636,57 @@ class ListRequestTest extends TestCase
                 'comments:min' => 'Must be less than max.',
                 'comments:max' => 'Must be greater than min.',
             ]);
+    }
+
+    public function test_filtering_relationship_exists_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $rejected = Post::factory()->create();
+        $expected = Post::factory()->create();
+
+        $expected->tags()->attach([$tag1->id, $tag2->id]);
+
+        $this->get('/posts?tags:exists=true')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $expected->id);
+    }
+
+    public function test_filtering_relationship_count_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $rejected = Post::factory()->create();
+        $expected = Post::factory()->create();
+
+        $rejected->tags()->attach($tag1->id);
+        $expected->tags()->attach([$tag1->id, $tag2->id]);
+
+        $this->get('/posts?tags:count=2')
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $expected->id);
+    }
+
+    public function test_filtering_relationship_count_range_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $one = Post::factory()->create();
+        $two = Post::factory()->create();
+
+        $one->tags()->attach($tag1->id);
+        $two->tags()->attach([$tag1->id, $tag2->id]);
+
+        $this->get('/posts?tags:min=2')
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $two->id);
+
+        $this->get('/posts?tags:max=1')
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $one->id);
     }
 
     public function test_filtering_with_search_terms()

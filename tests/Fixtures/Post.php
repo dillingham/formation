@@ -24,6 +24,11 @@ class Post extends Model
             ->where('user_id', auth()->id());
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)->using(PostTag::class);
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
