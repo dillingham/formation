@@ -287,6 +287,15 @@ Filter::make('deleted')->onlyTrashed(),
 /articles?deleted=true
 ```
 
+### related
+Results by a relationship primary key:
+```php
+Filter::make('author')->related(),
+```
+```
+/articles?author=1
+```
+
 ### exists
 Results where a relationship exists
 ```php
@@ -297,7 +306,7 @@ Filter::make('like')->exists(),
 ```
 
 ### count
-Results by a has many relationship count
+Results by a relationship count
 ```php
 Filter::make('comments')->count(),
 ```
@@ -306,21 +315,12 @@ Filter::make('comments')->count(),
 ```
 
 ### countRange
-Results by a has many relationship range
+Results by a relationship count min / max range
 ```php
 Filter::make('comments')->countRange(),
 ```
 ```
 /articles?comments:min=5&comments:max=10
-```
-
-### related
-Results where a relationship is used:
-```php
-Filter::make('author')->related(),
-```
-```
-/articles?author=1
 ```
 
 ### scope
