@@ -714,81 +714,6 @@ class ListRequestTest extends TestCase
         $this->assertTrue($redirect->isRedirect());
     }
 
-    public function test_ranges()
-    {
-        $twoMonths = Post::factory()->create([
-            'created_at' => now()->startOfMonth()->subMonth(),
-        ]);
-
-        $twoDays = Post::factory()->create([
-            'created_at' => now()->subDays(2),
-        ]);
-
-        $today = Post::factory()->create([
-            'created_at' => today(),
-        ]);
-
-        $this->get('posts?range=today')
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $today->id);
-
-        $this->get('posts?range=this-week')
-            ->assertJsonCount(2, 'data');
-
-        $this->get('posts?range=2-months')
-            ->assertJsonCount(3, 'data');
-    }
-
-    public function test_multiple_ranges()
-    {
-        // between 100 / 500 and today
-
-        $one = Post::factory()->create([
-            'created_at' => today(),
-            'length' => 100,
-        ]);
-
-        $two = Post::factory()->create([
-            'created_at' => today(),
-            'length' => 500,
-        ]);
-
-        $yesterday = Post::factory()->create([
-            'created_at' => today()->subDays(2),
-            'length' => 100,
-        ]);
-
-        $short = Post::factory()->create([
-            'created_at' => today(),
-            'length' => 600,
-        ]);
-
-        $this->get('posts?range[]=today&range[]=long')
-            ->assertJsonCount(2, 'data')
-            ->assertJsonFragment(['id' => $one->id])
-            ->assertJsonFragment(['id' => $two->id]);
-
-        $this->get('posts?range[]=long')
-            ->assertJsonCount(3, 'data')
-            ->assertJsonFragment(['id' => $one->id])
-            ->assertJsonFragment(['id' => $two->id])
-            ->assertJsonFragment(['id' => $yesterday->id]);
-
-        $this->get('posts?range[]=today')
-            ->assertJsonCount(3, 'data')
-            ->assertJsonFragment(['id' => $one->id])
-            ->assertJsonFragment(['id' => $two->id])
-            ->assertJsonFragment(['id' => $short->id]);
-    }
-
-    public function test_multiple_ranges_with_same_column()
-    {
-        $this->get('posts?range[]=today&range[]=this-week')
-            ->assertSessionHaserrors([
-                'range' => 'Ranges with same target are invalid.',
-            ]);
-    }
-
     public function test_rules_defined_on_request_class()
     {
         $this->get('/posts?rule_test=not-allowed-value')
@@ -966,7 +891,6 @@ class ListRequestTest extends TestCase
         $request = (new ListRequest());
         $this->assertEquals([], $request->rules());
         $this->assertEquals([], $request->filters());
-        $this->assertEquals([], $request->ranges());
     }
 
     public function test_list_requests_must_have_builder()

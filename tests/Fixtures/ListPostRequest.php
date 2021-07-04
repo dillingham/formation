@@ -4,8 +4,6 @@ namespace Dillingham\ListRequest\Tests\Fixtures;
 
 use Dillingham\ListRequest\Filter;
 use Dillingham\ListRequest\ListRequest;
-use Dillingham\ListRequest\Range;
-use Illuminate\Support\Facades\DB;
 
 class ListPostRequest extends ListRequest
 {
@@ -88,34 +86,6 @@ class ListPostRequest extends ListRequest
             Filter::radius(),
 
             Filter::bounds(),
-        ];
-    }
-
-    public function ranges()
-    {
-        return [
-            Range::make('today')
-                ->between('created_at', [
-                    now()->startOfDay(),
-                    now()->endOfDay(),
-                ]),
-
-            Range::make('this-week')
-                ->between('created_at', [
-                    now()->subDays(7),
-                    now(),
-                ]),
-
-            Range::make('2-months')
-                ->between('created_at', [
-                    now()->subMonths(2),
-                    now(),
-                ]),
-
-            Range::make('long')
-                ->between('length', [
-                    100, 500,
-                ]),
         ];
     }
 }
