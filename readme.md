@@ -1,4 +1,4 @@
-# ListRequest
+# Laravel ListRequest
 
 <p>
     <a href="https://github.com/dillingham/list-request/actions">
@@ -15,15 +15,15 @@
     </a>
 </p>
 
-Add search, sort, filters & more with a typehint in your controller like a [FormRequest](https://laravel.com/docs/validation#form-request-validation).
+Add search, sort, filters & more with a typehint in your controller like Laravel's [FormRequest](https://laravel.com/docs/validation#form-request-validation).
 
 Remove all that logic from your models / controllers, and auto-validate query parameters!
 
-This package solves many common scenarios with a minimal and simple setup.
+This package handles many common scenarios and is setup in a minimal Laravel way.
 
 
 - ✅ Search columns
-- ✅ Search relationships columns
+- ✅ Search relationships columns 
 - ✅ Sort by columns
 - ✅ Sort by relationship columns
 - ✅ Sort by relationship counts
