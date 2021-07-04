@@ -82,6 +82,8 @@ class ListPostRequest extends ListRequest
             Filter::make('money', 'length')->cents(),
 
             Filter::radius(),
+
+            Filter::bounds(),
         ];
     }
 
