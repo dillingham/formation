@@ -63,6 +63,22 @@ class ListRequestTest extends TestCase
             ->assertJsonPath('data.0.id', $expected->id);
     }
 
+    public function test_search_relations_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $rejected = Post::factory()->create();
+        $expected = Post::factory()->create();
+
+        $rejected->tags()->attach([$tag2->id]);
+        $expected->tags()->attach([$tag1->id]);
+
+        $this->get('/posts?search=php')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $expected->id);
+    }
+
     public function test_per_page()
     {
         Post::factory(4)->create();

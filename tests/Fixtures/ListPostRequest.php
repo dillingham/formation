@@ -12,6 +12,7 @@ class ListPostRequest extends ListRequest
     public $search = [
         'title',
         'comments.body',
+        'tags.title',
     ];
 
     public $sort = [
