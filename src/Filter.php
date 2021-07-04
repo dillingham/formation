@@ -658,7 +658,7 @@ class Filter
      *
      * @return $this
      */
-    public function cents()
+    public function asCents()
     {
         $this->cents = true;
 
