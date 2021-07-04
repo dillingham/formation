@@ -362,7 +362,7 @@ Filter::radius(),
 ```
 
 ### bounds
-Results within a square location boundary.
+Results within a set of map boundaries.
 ```php
 Filter::bounds(),
 ```
