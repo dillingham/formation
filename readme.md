@@ -17,15 +17,31 @@
 
 Add search, sort, filters & more with a typehint in your controller like a [FormRequest](https://laravel.com/docs/validation#form-request-validation).
 
-Remove all that logic from your models / controllers, and validate your query parameters!
+Remove all that logic from your models / controllers, and auto-validate query parameters!
 
-✅ Search relationships ✅ Filter date ranges ✅ Sort by relationship counts ✅ Filter trashed
+This package solves many common scenarios with a minimal and simple setup.
 
-And so much more! This package solves many common scenarios with a minimal and simple setup.
+
+- ✅ Search columns 
+- ✅ Search relationships columns
+- ✅ Sort by columns
+- ✅ Sort by relationship columns
+- ✅ Sort by relationship counts
+- ✅ Filter by dates
+- ✅ Filter by date ranges
+- ✅ Filter by relationships
+- ✅ Filter by relationship counts
+- ✅ Filter by latitude & longitude
+- ✅ Filter by radius
+- ✅ Filter by soft deleted
+- ✅ Filter by within scope
+- ✅ Filter by outside scope
+- ✅ Filter by muliple values
+- ✅ And so much more! 
 
 ---
 
-[Install](#install) | [Search](#search) | [Sort](#sort) | [Filters](#filters) | [Ranges](#ranges) | [Helpers](#helpers)
+[Install](#install) | [Search](#search) | [Sort](#sort) | [Filters](#filters) | [Helpers](#helpers)
 
 ---
 
@@ -65,7 +81,6 @@ namespace App\Http\Requests;
 
 use Dillingham\ListRequest\Filter;
 use Dillingham\ListRequest\ListRequest;
-use Dillingham\ListRequest\Range;
 
 class ListArticleRequest extends ListRequest
 {
@@ -104,22 +119,6 @@ class ListArticleRequest extends ListRequest
             Filter::make('author')->related(),
             Filter::make('published_at')->dateRange(),
             Filter::make('comments')->countRange(),
-        ];
-    }
-
-    /**
-     * Define the ranges
-     *
-     * @return array
-     */
-    public function ranges()
-    {
-        return [
-            Range::make('this-week')
-                ->between('published_at', [
-                    today()->subWeek(),
-                    today()
-                ])
         ];
     }
 }
@@ -370,46 +369,6 @@ Filter::bounds(),
 /users?ne_lat=40.75555971122113&ne_lng=-73.96922446090224&sw_lat=40.74683062112093&sw_lng=-73.98124075728896
 ```
 `sw_lat`, `sw_lng`, `ne_lat`, `ne_lng`
----
-
-## Ranges
-
-Ranges are pre-defined start and finish values to filter between.
-
-Here is how to define: `Today`, `7 Days`, `This Month`:
-
-```php
-public function ranges()
-{
-    return [
-        Range::make('today')
-            ->between('created_at', [
-                now()->startOfDay(),
-                now()->endOfDay(),
-            ]),
-
-        Range::make('7-days')
-            ->between('created_at', [
-                now()->subDays(7),
-                now(),
-            ]),
-
-        Range::make('month')
-            ->between('created_at', [
-                now()->startOfMonth(),
-                now()->endOfMonth(),
-            ]),
-    ];
-}
-```
-Use ranges by referencing it's key:
-```
-/articles?range=today
-```
-Multiple ranges are supported; same columns are invalid.
-```
-/articles?range[]=today&range[]=lengthy
-```
 
 ---
 
