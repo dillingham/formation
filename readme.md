@@ -361,6 +361,15 @@ Filter::radius(),
 /users?latitude=40.7517&longitude=-73.9755&distance=10
 ```
 
+### bounds
+Results within a set of map boundaries.
+```php
+Filter::bounds(),
+```
+```
+/users?ne_lat=40.75555971122113&ne_lng=-73.96922446090224&sw_lat=40.74683062112093&sw_lng=-73.98124075728896
+```
+`sw_lat`, `sw_lng`, `ne_lat`, `ne_lng`
 ---
 
 ## Ranges

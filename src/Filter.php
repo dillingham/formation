@@ -507,6 +507,39 @@ class Filter
     }
 
     /**
+     * Make a bounds filter.
+     *
+     * @return $this
+     */
+    public static function bounds()
+    {
+        $filter = (new self)->make(['sw_lat', 'sw_lng', 'ne_lat', 'ne_lng']);
+
+        $filter->withRules(['numeric', 'required_with:sw_lng,ne_lat,ne_lng'], 'sw_lat');
+        $filter->withRules(['numeric', 'required_with:sw_lat,ne_lat,ne_lng'], 'sw_lng');
+        $filter->withRules(['numeric', 'required_with:sw_lat,sw_lng,ne_lng'], 'ne_lat');
+        $filter->withRules(['numeric', 'required_with:sw_lat,sw_lng,ne_lat'], 'ne_lng');
+
+        $filter->withQuery(function ($query) use($filter) {
+
+            $range = ($filter->value['sw_lat'] < $filter->value['ne_lat'])
+                ? [ $filter->value['sw_lat'], $filter->value['ne_lat'] ]
+                : [ $filter->value['ne_lat'], $filter->value['sw_lat'] ];
+
+            $query->whereBetween('latitude', $range);
+
+            $range = ($filter->value['sw_lng'] < $filter->value['ne_lng'])
+                ? [ $filter->value['sw_lng'], $filter->value['ne_lng'] ]
+                : [ $filter->value['ne_lng'], $filter->value['sw_lng'] ];
+
+            $query->whereBetween('longitude', $range);
+
+        });
+
+        return $filter;
+    }
+
+    /**
      * Register a modifier.
      *
      * @param $modifier
