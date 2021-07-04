@@ -4,7 +4,6 @@ namespace {{ namespace }};
 
 use Dillingham\ListRequest\Filter;
 use Dillingham\ListRequest\ListRequest;
-use Dillingham\ListRequest\Range;
 
 class {{ class }} extends ListRequest
 {
@@ -38,18 +37,6 @@ class {{ class }} extends ListRequest
      * @return array
      */
     public function filters()
-    {
-        return [
-            //
-        ];
-    }
-
-    /**
-     * Define the ranges
-     *
-     * @return array
-     */
-    public function ranges()
     {
         return [
             //

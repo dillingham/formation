@@ -7,9 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class ListRequest extends FormRequest
 {
@@ -142,7 +140,6 @@ class ListRequest extends FormRequest
         $query = $this->builder();
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
-        $query = $this->applyRanges($query);
         $query = $this->applyFilters($query);
 
         return $query;
@@ -201,33 +198,6 @@ class ListRequest extends FormRequest
         foreach ($this->filters() as $filter) {
             $filter->setRequest($this);
             $filter->apply($query);
-        }
-
-        return $query;
-    }
-
-    /**
-     * Apply ranges to the query.
-     *
-     * @var Builder
-     * @return Builder
-     */
-    protected function applyRanges($query)
-    {
-        $columns = [];
-
-        foreach ($this->ranges() as $range) {
-            if ($this->request->get('range')
-                && in_array($range->key, Arr::wrap($this->request->get('range')))) {
-                if (in_array($range->column, $columns)) {
-                    throw ValidationException::withMessages([
-                        'range' => 'Ranges with same target are invalid.',
-                    ]);
-                }
-
-                $query = $range->apply($query);
-                $columns[] = $range->column;
-            }
         }
 
         return $query;
@@ -324,11 +294,6 @@ class ListRequest extends FormRequest
     }
 
     public function filters()
-    {
-        return [];
-    }
-
-    public function ranges()
     {
         return [];
     }
