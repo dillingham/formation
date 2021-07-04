@@ -127,15 +127,13 @@ class ListArticleRequest extends ListRequest
 ---
 
 
-# Configuration
-
 Below are the many options available for configuring ListRequests.
 
 #### The results
 
 All results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.
 
-## Search
+# Search
 Define columns or relationship columns to search:
 
 ```php
@@ -148,7 +146,7 @@ public $search = ['title', 'comments.body'];
 
 ---
 
-## Sort
+# Sort
 
 Define which columns are sortable:
 ```php
@@ -165,7 +163,7 @@ Change `sort` to `sort-desc` changes it's direction.
 /articles?sort-desc=created_at
 ```
 
-#### Relationships
+#### Sorting Relationships
 Sort relationship counts, relationship columns and or alias them:
 
 ```php
@@ -179,7 +177,7 @@ public $sort = [
 
 ---
 
-## Filters
+## General Filters
 
 Enable parameters for a list by adding to it's `filters()`:
 ```php
@@ -269,23 +267,9 @@ Filter::make('written-by')->search([
 /articles?written-by=Brian
 ```
 
-### withTrashed
-Results include soft deleted and not deleted
-```php
-Filter::make('with-deleted')->withTrashed(),
-```
-```
-/articles?with-deleted=true
-```
+## Relationship Filters
 
-### onlyTrashed
-Results only include soft deleted
-```php
-Filter::make('deleted')->onlyTrashed(),
-```
-```
-/articles?deleted=true
-```
+Below are a few filters for Laravel's Eloquent relationships.
 
 ### related
 Results by a relationship primary key:
@@ -317,39 +301,15 @@ Filter::make('comments')->count(),
 ### countRange
 Results by a relationship count min / max range
 ```php
-Filter::make('comments')->countRange(),
+Filter::make('tags')->countRange(),
 ```
 ```
-/articles?comments:min=5&comments:max=10
-```
-
-### scope
-Results where a model scope is applied
-```php
-Filter::make('published')->scope(),
-```
-```
-/articles?published=true
+/articles?tags:min=5&tags:max=10
 ```
 
-```php
-public function scopePublished($query)
-{
-    $query->whereNotNull('published_at');
-}
-```
-> The value gets passed as the scope's 2nd parameter, so `false` will apply a scope by default.
+## Location Filters
 
-### scopeBoolean
-Results in scope = `true`, or not in scope = `false`
-```php
-Filter::make('published')->scopeBoolean(),
-```
-```
-/articles?published=true
-```
-
->  `false` produces the opposite and returns all results that are not in the scope
+These filters use geo location to filter Laravel models.
 
 ### radius
 Results within a latitude, longtitude & distance.
@@ -368,7 +328,64 @@ Filter::bounds(),
 ```
 /users?ne_lat=40.75555971122113&ne_lng=-73.96922446090224&sw_lat=40.74683062112093&sw_lng=-73.98124075728896
 ```
-`sw_lat`, `sw_lng`, `ne_lat`, `ne_lng`
+`ne_lat`, `ne_lng`, `sw_lat`, `sw_lng`
+
+
+## Scope Filters
+
+These filters use Laravel's model scope.
+
+### scope
+Results where a model scope is applied
+```php
+Filter::make('status')->scope(),
+```
+```
+/articles?status=active
+```
+
+```php
+public function scopeStatus($query, $value)
+{
+    $query->where('status', $value);
+}
+```
+
+
+### scopeBoolean
+Results in scope = `true`, or not in scope = `false`
+```php
+Filter::make('published')->scopeBoolean(),
+```
+```
+/articles?published=true
+```
+```
+/articles?published=false
+```
+
+>  `false` produces the opposite and returns all results that are not in the scope
+
+
+## Soft Delete Filters
+
+### withTrashed
+Results include soft deleted and not deleted
+```php
+Filter::make('with-deleted')->withTrashed(),
+```
+```
+/articles?with-deleted=true
+```
+
+### onlyTrashed
+Results only include soft deleted
+```php
+Filter::make('deleted')->onlyTrashed(),
+```
+```
+/articles?deleted=true
+```
 
 ---
 
@@ -376,13 +393,13 @@ Filter::bounds(),
 
 Here are some scenarios and recipies:
 
-## Adding authentication restriction
+### Adding authentication restriction
 Redirects to route('login') if unauthenticated.
 ```php
 Filter::make('like')->exists()->auth(),
 ```
 
-## Using a different public key
+### Using a different public key
 
 A url key different from the relationship or column name
 ```php
@@ -393,7 +410,7 @@ Filter::make('author', 'activeAuthor'),
 /articles?status=1
 ```
 
-## Adding a multiple values
+### Adding a multiple values
 
 Allow the filter to accept many values for the same key
 ```php
@@ -403,13 +420,13 @@ Filter::make('status')->multiple(),
 /articles?status[]=active&status[]=draft
 ```
 
-## Adding filter rules
+### Adding filter rules
 Appends the rules set by the filter types.
 ```php
 Filter::make('status')->withRules('in:active,inactive'),
 ```
 
-## Adding value conditions
+### Adding value conditions
 Add conditions based on the parameter value.
 ```php
 Filter::make('status')
@@ -418,7 +435,7 @@ Filter::make('status')
     }),
 ```
 
-## Appending the query
+### Appending the query
 Add to the query to apply additional conditions.
 ```php
 Filter::make('published')
@@ -427,7 +444,7 @@ Filter::make('published')
     }),
 ```
 
-## Converting to cents
+### Converting to cents
 When the public value is in dollars and db is in cents
 ```php
 Filter::make('price')->asCents()
@@ -436,7 +453,7 @@ Filter::make('price')->asCents()
 /products?price=100 // where('price', 10000)
 ```
 
-## Adding hardcoded filters
+### Adding hardcoded filters
 
 Useful for defining routes with filters: `/active`
 
