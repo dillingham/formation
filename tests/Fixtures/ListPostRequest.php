@@ -50,6 +50,7 @@ class ListPostRequest extends ListRequest
             Filter::make('comments')->exists(),
             Filter::make('comments')->count(),
             Filter::make('comments')->countRange(),
+            Filter::make('tagged', 'tags')->related()->multiple(),
             Filter::make('tags')->exists(),
             Filter::make('tags')->count(),
             Filter::make('tags')->countRange(),
