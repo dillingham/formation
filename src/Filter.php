@@ -5,6 +5,8 @@ namespace Dillingham\ListRequest;
 use Dillingham\ListRequest\Exceptions\ReservedException;
 use Dillingham\ListRequest\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -437,11 +439,25 @@ class Filter
         $this->withRules('nullable');
 
         $this->withQuery(function ($query) {
+
             $this->validateMultiple();
 
-            $key = $query->getModel()->{$this->key}()->getForeignKeyName();
+            $relation = $query->getModel()->{$this->key}();
 
-            $query->whereIn($key, Arr::wrap($this->value));
+            if(is_a($relation, BelongsTo::class)) {
+                $key = $relation->getForeignKeyName();
+                $query->whereIn($key, Arr::wrap($this->value));
+                return $query;
+            }
+
+            $query->whereHas($this->key, function($query) use($relation) {
+                $query->whereIn(
+                    $relation->getQualifiedRelatedKeyName(),
+                    Arr::wrap($this->value)
+                );
+            });
+
+            return $query;
         });
 
         return $this;

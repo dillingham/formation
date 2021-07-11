@@ -638,6 +638,48 @@ class ListRequestTest extends TestCase
             ]);
     }
 
+    public function test_filtering_relationship_with_pivots()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $post1 = Post::factory()->create();
+        $post2 = Post::factory()->create();
+
+        $post1->tags()->attach([$tag1->id]);
+        $post2->tags()->attach([$tag2->id]);
+
+        $this->get('/posts?tagged='.$tag1->id)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $post1->id);
+
+        $this->get('/posts?tagged='.$tag2->id)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $post2->id);
+    }
+
+    public function test_filtering_relationship_with_pivots_and_multiple()
+    {
+        $tag1 = Tag::create(['title' => 'PHP']);
+        $tag2 = Tag::create(['title' => 'JS']);
+
+        $post1 = Post::factory()->create();
+        $post2 = Post::factory()->create();
+
+        $post1->tags()->attach([$tag1->id, $tag2->id]);
+        $post2->tags()->attach([$tag2->id]);
+
+        $this->get('/posts?tagged[]=abc')
+            ->assertJsonCount(0, 'data');
+
+        $this->get('/posts?tagged[]='.$tag1->id)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $post1->id);
+
+        $this->get('/posts?tagged[]='.$tag1->id.'&tagged[]='.$tag2->id)
+            ->assertJsonCount(2, 'data');
+    }
+
     public function test_filtering_relationship_exists_with_pivots()
     {
         $tag1 = Tag::create(['title' => 'PHP']);
