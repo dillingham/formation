@@ -37,7 +37,7 @@ class ListRequest extends FormRequest
      *
      * @var int
      */
-    protected $maxPerPage = 10;
+    protected $maxPerPage = 100;
 
     /**
      * The query builder instance.
