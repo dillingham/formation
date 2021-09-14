@@ -37,7 +37,7 @@ class ListRequest extends FormRequest
      *
      * @var int
      */
-    protected $maxPerPage = 100;
+    protected $maxPerPage = 10;
 
     /**
      * The query builder instance.
@@ -87,13 +87,15 @@ class ListRequest extends FormRequest
             return $this->results;
         }
 
-        $perPage = $this->input('per_page', $this->maxPerPage);
+        $builder = $this->getBuilderInstance();
+
+        $perPage = $this->input('per_page', $builder->getModel()->getPerPage());
 
         if ($perPage > $this->maxPerPage) {
             $perPage = $this->maxPerPage;
         }
 
-        $this->results = $this->getBuilderInstance()
+        $this->results = $builder
             ->paginate($perPage)
             ->withQueryString();
 
