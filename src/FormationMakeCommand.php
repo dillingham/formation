@@ -1,18 +1,18 @@
 <?php
 
-namespace Dillingham\ListRequest;
+namespace Dillingham\Formation;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-class ListRequestMakeCommand extends GeneratorCommand
+class FormationMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:list-request';
+    protected $name = 'make:formation';
 
     /**
      * The console command description.
@@ -26,14 +26,7 @@ class ListRequestMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $type = 'Request';
-
-    /**
-     * Indicates whether the command should be shown in the Artisan command list.
-     *
-     * @var bool
-     */
-    protected $hidden = true;
+    protected $type = 'Formation';
 
     /**
      * Get the stub file for the generator.
@@ -42,7 +35,7 @@ class ListRequestMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->resolveStubPath('/stubs/request.list.stub');
+        return $this->resolveStubPath('/stubs/formation.stub');
     }
 
     /**
@@ -66,7 +59,7 @@ class ListRequestMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Http\Requests';
+        return $rootNamespace.'\Formations';
     }
 
     /**
