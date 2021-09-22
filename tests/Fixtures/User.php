@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;

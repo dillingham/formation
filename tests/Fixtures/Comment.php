@@ -1,8 +1,8 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures;
 
-use Dillingham\ListRequest\Tests\Fixtures\Database\Factories\CommentFactory;
+use Dillingham\Formation\Tests\Fixtures\Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

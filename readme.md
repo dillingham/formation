@@ -1,14 +1,14 @@
-# Laravel ListRequest
+# Laravel Formation
 
 <p>
-    <a href="https://github.com/dillingham/list-request/actions">
-        <img src="https://github.com/dillingham/list-request/workflows/tests/badge.svg" alt="Build Status">
+    <a href="https://github.com/dillingham/formation/actions">
+        <img src="https://github.com/dillingham/formation/workflows/tests/badge.svg" alt="Build Status">
     </a>
-    <a href="https://packagist.org/packages/dillingham/list-request">
-        <img src="https://img.shields.io/packagist/v/dillingham/list-request" alt="Latest Stable Version">
+    <a href="https://packagist.org/packages/dillingham/formation">
+        <img src="https://img.shields.io/packagist/v/dillingham/formation" alt="Latest Stable Version">
     </a>
-    <a href="https://packagist.org/packages/dillingham/list-request">
-        <img src="https://img.shields.io/packagist/dt/dillingham/list-request" alt="Total Downloads">
+    <a href="https://packagist.org/packages/dillingham/formation">
+        <img src="https://img.shields.io/packagist/dt/dillingham/formation" alt="Total Downloads">
     </a>
     <a href="https://twitter.com/im_brian_d">
         <img src="https://img.shields.io/twitter/follow/im_brian_d?color=%231da1f1&label=Twitter&logo=%231da1f1&logoColor=%231da1f1&style=flat-square" alt="twitter">
@@ -48,13 +48,13 @@ This package handles many common scenarios and is setup in a minimal Laravel way
 # Install
 Add to a Laravel project using composer:
 ```
-composer require dillingham/list-request
+composer require dillingham/formation
 ```
 
-Create a request class using artisan `--list`:
+Create a formation class using artisan:
 
 ```
-php artisan make:request ListArticleRequest --list
+php artisan make:formation ArticleFormation
 ```
 
 Then typehint in your controller and call `->results()` to execute.
@@ -64,7 +64,7 @@ Then typehint in your controller and call `->results()` to execute.
 
 class ArticleController
 {
-    public function index(ListArticleRequest $request)
+    public function index(ArticleFormation $request)
     {
         return view('articles.index', [
             'articles' => $request->results()
@@ -72,17 +72,17 @@ class ArticleController
     }
 }
 ```
-And here is an example of a configured ListRequest:
+And here is an example of a configured Formation:
 
 ```php
 <?php
 
-namespace App\Http\Requests;
+namespace App\Formations;
 
-use Dillingham\ListRequest\Filter;
-use Dillingham\ListRequest\ListRequest;
+use Dillingham\Formation\Filter;
+use Dillingham\Formation\Formation;
 
-class ListArticleRequest extends ListRequest
+class ArticleFormation extends Formation
 {
     /**
      * The searchable columns,
@@ -103,7 +103,7 @@ class ListArticleRequest extends ListRequest
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function builder()
+    public function query()
     {
         return Article::query();
     }
@@ -127,7 +127,7 @@ class ListArticleRequest extends ListRequest
 ---
 
 
-Below are the many options available for configuring ListRequests.
+Below are the many options available for configuring Formations.
 
 #### The results
 
@@ -179,7 +179,7 @@ public $sort = [
 
 ## General Filters
 
-Enable parameters for a list by adding to it's `filters()`:
+Enable query parameters by adding to `filters()`:
 ```php
 public function filters()
 {
@@ -207,7 +207,7 @@ Filter::make('active')->toggle(),
 ```
 
 ### options
-Results where a column equals a value from a list:
+Results where a column equals one of the optionst:
 ```php
 Filter::make('status')->options(['published', 'draft']),
 ```
@@ -447,7 +447,7 @@ Filter::make('published')
 ### Converting to cents
 When the public value is in dollars and db is in cents
 ```php
-Filter::make('price')->asCents()
+Filter::make('price')->asCents(),
 ```
 ```
 /products?price=100 // where('price', 10000)
@@ -458,7 +458,7 @@ Filter::make('price')->asCents()
 Useful for defining routes with filters: `/active`
 
 ```php
-public function active(ListArticleRequest $request)
+public function active(ArticleFormation $request)
 {
     $request->merge(['status' => 'active']);
 

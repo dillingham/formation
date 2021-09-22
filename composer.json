@@ -1,5 +1,5 @@
 {
-    "name": "dillingham/list-request",
+    "name": "dillingham/formation",
     "description": "Laravel index filters & validation",
     "type": "library",
     "license": "MIT",
@@ -11,18 +11,18 @@
     ],
     "autoload": {
         "psr-4": {
-            "Dillingham\\ListRequest\\": "src/"
+            "Dillingham\\Formation\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Dillingham\\ListRequest\\Tests\\": "tests/"
+            "Dillingham\\Formation\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Dillingham\\ListRequest\\ListRequestProvider"
+                "Dillingham\\Formation\\FormationProvider"
             ]
         }
     },

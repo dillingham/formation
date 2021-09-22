@@ -1,11 +1,11 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures;
 
-use Dillingham\ListRequest\Filter;
-use Dillingham\ListRequest\ListRequest;
+use Dillingham\Formation\Filter;
+use Dillingham\Formation\Formation;
 
-class ListPostRequest extends ListRequest
+class PostFormation extends Formation
 {
     public $search = [
         'title',
@@ -24,7 +24,7 @@ class ListPostRequest extends ListRequest
         'sort-desc' => 'body',
     ];
 
-    public function rules()
+    public function rules():array
     {
         return [
             'rule_test' => 'nullable|in:allowed-value',
@@ -36,7 +36,7 @@ class ListPostRequest extends ListRequest
         return Post::query();
     }
 
-    public function filters()
+    public function filters():array
     {
         return [
             Filter::make('id'),

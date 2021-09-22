@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\ListRequest;
+namespace Dillingham\Formation;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 

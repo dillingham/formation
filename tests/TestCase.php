@@ -1,8 +1,8 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests;
+namespace Dillingham\Formation\Tests;
 
-use Dillingham\ListRequest\ListRequestProvider;
+use Dillingham\Formation\FormationProvider;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +15,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            ListRequestProvider::class,
+            FormationProvider::class,
         ];
     }
 

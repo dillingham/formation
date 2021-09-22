@@ -1,9 +1,9 @@
 <?php
 
-namespace Dillingham\ListRequest;
+namespace Dillingham\Formation;
 
-use Dillingham\ListRequest\Exceptions\ReservedException;
-use Dillingham\ListRequest\Exceptions\UnauthorizedException;
+use Dillingham\Formation\Exceptions\ReservedException;
+use Dillingham\Formation\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

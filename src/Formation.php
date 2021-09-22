@@ -1,15 +1,16 @@
 <?php
 
-namespace Dillingham\ListRequest;
+namespace Dillingham\Formation;
 
-use Dillingham\ListRequest\Exceptions\PageExceededException;
+use Dillingham\Formation\Exceptions\PageExceededException;
 use Exception;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class ListRequest extends FormRequest
+class Formation extends FormRequest
 {
     /**
      * Array of columns allowed to search by.
@@ -154,7 +155,7 @@ class ListRequest extends FormRequest
      */
     public function builder()
     {
-        throw new Exception('A ListRequest must have a builder() method', 500);
+        throw new Exception('A Formation must have a builder() method', 500);
     }
 
     /**
@@ -230,7 +231,8 @@ class ListRequest extends FormRequest
 
             $query->join(
                 $relation->getModel()->getTable(),
-                $relation->getQualifiedForeignKeyName(), '=',
+                $relation->getQualifiedForeignKeyName(),
+                '=',
                 $relation->getQualifiedParentKeyName()
             );
         } elseif (method_exists($query->getModel(), $sortable['column'])) {
@@ -243,7 +245,7 @@ class ListRequest extends FormRequest
         return $query;
     }
 
-    public function getSortable()
+    public function getSortable(): array
     {
         $sortable = [
             'relationship' => null,
@@ -290,12 +292,12 @@ class ListRequest extends FormRequest
         }
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
 
-    public function filters()
+    public function filters(): array
     {
         return [];
     }

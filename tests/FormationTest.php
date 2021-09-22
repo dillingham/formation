@@ -1,22 +1,22 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests;
+namespace Dillingham\Formation\Tests;
 
-use Dillingham\ListRequest\Exceptions\ReservedException;
-use Dillingham\ListRequest\Exceptions\UnauthorizedException;
-use Dillingham\ListRequest\Filter;
-use Dillingham\ListRequest\ListRequest;
-use Dillingham\ListRequest\Tests\Fixtures\Comment;
-use Dillingham\ListRequest\Tests\Fixtures\Like;
-use Dillingham\ListRequest\Tests\Fixtures\ListPostRequest;
-use Dillingham\ListRequest\Tests\Fixtures\Post;
-use Dillingham\ListRequest\Tests\Fixtures\Tag;
+use Dillingham\Formation\Exceptions\ReservedException;
+use Dillingham\Formation\Exceptions\UnauthorizedException;
+use Dillingham\Formation\Filter;
+use Dillingham\Formation\Formation;
+use Dillingham\Formation\Tests\Fixtures\Comment;
+use Dillingham\Formation\Tests\Fixtures\Like;
+use Dillingham\Formation\Tests\Fixtures\Post;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\Fixtures\Tag;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-class ListRequestTest extends TestCase
+class FormationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -24,7 +24,7 @@ class ListRequestTest extends TestCase
     {
         parent::setUp();
 
-        Route::get('/posts', function (ListPostRequest $request) {
+        Route::get('/posts', function (PostFormation $request) {
             return $request->results();
         });
     }
@@ -413,7 +413,7 @@ class ListRequestTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $medium->id);
 
-            $this->get('/posts?length-range=large')
+        $this->get('/posts?length-range=large')
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $large->id);
     }
@@ -930,7 +930,7 @@ class ListRequestTest extends TestCase
 
     public function test_list_requests_have_defaults()
     {
-        $request = (new ListRequest());
+        $request = (new Formation());
         $this->assertEquals([], $request->rules());
         $this->assertEquals([], $request->filters());
     }
@@ -939,7 +939,7 @@ class ListRequestTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        (new ListRequest())->results();
+        (new Formation())->results();
     }
 
     public function test_calling_results_twice_is_cached()
@@ -950,7 +950,7 @@ class ListRequestTest extends TestCase
             $count++;
         });
 
-        $request = (new ListPostRequest());
+        $request = (new PostFormation());
         $request->results();
         $request->results();
 
@@ -959,7 +959,7 @@ class ListRequestTest extends TestCase
 
     public function test_empty_sortable()
     {
-        $request = new ListPostRequest();
+        $request = new PostFormation();
         $request->defaults = [];
         $request->results();
         $this->assertTrue(true); // just appeasing test score

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures\Database\Factories;
+namespace Dillingham\Formation\Tests\Fixtures\Database\Factories;
 
-use Dillingham\ListRequest\Tests\Fixtures\Post;
-use Dillingham\ListRequest\Tests\Fixtures\User;
+use Dillingham\Formation\Tests\Fixtures\Post;
+use Dillingham\Formation\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests;
+namespace Dillingham\Formation\Tests;
 
-use Dillingham\ListRequest\Tests\Fixtures\ListPostRequest;
-use Dillingham\ListRequest\Tests\Fixtures\Post;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\Fixtures\Post;
 use Illuminate\Support\Facades\Route;
 
 class RadiusTest extends TestCase
@@ -14,7 +14,7 @@ class RadiusTest extends TestCase
     {
         parent::setUp();
 
-        Route::get('/posts', function (ListPostRequest $request) {
+        Route::get('/posts', function (PostFormation $request) {
             return $request->results();
         });
 

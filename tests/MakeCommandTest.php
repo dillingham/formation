@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests;
+namespace Dillingham\Formation\Tests;
 
 use Illuminate\Support\Facades\File;
 
@@ -30,16 +30,16 @@ class MakeCommandTest extends TestCase
 
     public function test_make_command()
     {
-        $this->artisan('make:request ListArticleRequest --list');
-        $this->assertTrue(file_exists(base_path('app/Http/Requests/ListArticleRequest.php')));
+        $this->artisan('make:formation ArticleFormation');
+        $this->assertTrue(file_exists(base_path('app/Formations/ArticleFormation.php')));
     }
 
     public function test_make_command_custom_stub()
     {
         mkdir(base_path('stubs'));
-        file_put_contents(base_path('stubs/request.list.stub'), 'hello');
-        $this->artisan('make:request ListArticleRequest --list');
-        $this->assertTrue(file_exists(base_path('app/Http/Requests/ListArticleRequest.php')));
-        $this->assertEquals('hello', file_get_contents(base_path('app/Http/Requests/ListArticleRequest.php')));
+        file_put_contents(base_path('stubs/formation.stub'), 'hello');
+        $this->artisan('make:formation ArticleFormation');
+        $this->assertTrue(file_exists(base_path('app/Formations/ArticleFormation.php')));
+        $this->assertEquals('hello', file_get_contents(base_path('app/Formations/ArticleFormation.php')));
     }
 }

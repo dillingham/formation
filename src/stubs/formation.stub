@@ -1,0 +1,89 @@
+<?php
+
+namespace {{ namespace }};
+
+use Dillingham\Formation\Filter;
+use Dillingham\Formation\Formation;
+
+class {{ class }} extends Formation
+{
+    /**
+     * The searchable columns,
+     *
+     * @var array
+     */
+    public $search = [];
+
+    /**
+     * The sortable columns.
+     *
+     * @var array
+     */
+    public $sort = ['created_at'];
+
+    /**
+     * Define the query.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function builder()
+    {
+        return Model::query();
+    }
+
+    /**
+     * Define the fields.
+     *
+     * @return array
+     */
+    public function fields()
+    {
+        return [
+            Field::make('id'),
+            //
+            Field::make('created_at'),
+            Field::make('updated_at'),
+            Field::make('deleted_at'),
+        ];
+    }
+
+    /**
+     * Define the filters.
+     *
+     * @return array
+     */
+    public function filters()
+    {
+        return [
+            Filter::make('created_at')->dateRange(),
+            //
+        ];
+    }
+
+    /**
+     * Define the related.
+     *
+     * @return array
+     */
+    public function related()
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+     * Define the actions.
+     *
+     * @return array
+     */
+    public function actions()
+    {
+        return [
+            Action::make('delete')->job(Delete::class),
+            Action::make('restore')->job(Restore::class),
+            Action::make('force-delete')->job(ForceDelete::class),
+            //
+        ];
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\ListRequest\Exceptions;
+namespace Dillingham\Formation\Exceptions;
 
 use Exception;
 use function redirect;

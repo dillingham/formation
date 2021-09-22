@@ -1,8 +1,8 @@
 <?php
 
-namespace Dillingham\ListRequest\Tests\Fixtures\Database\Factories;
+namespace Dillingham\Formation\Tests\Fixtures\Database\Factories;
 
-use Dillingham\ListRequest\Tests\Fixtures\Comment;
+use Dillingham\Formation\Tests\Fixtures\Comment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommentFactory extends Factory
