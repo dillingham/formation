@@ -466,6 +466,19 @@ public function active(ArticleFormation $request)
 }
 ```
 
+### Adding query conditionals
+
+For hard coding conditions within controllers:
+
+```php
+public function index($author_id, ArticleFormation $request)
+{
+    $request->where('author_id', $author->id);
+
+    return $request->results();
+}
+```
+
 # Author
 
 

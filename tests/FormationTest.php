@@ -964,4 +964,17 @@ class FormationTest extends TestCase
         $request->results();
         $this->assertTrue(true); // just appeasing test score
     }
+
+    public function test_query_where_condition()
+    {
+        Post::factory()->create(['title' => 'Good']);
+        Post::factory()->create(['title' => 'Bad']);
+
+        $request = new PostFormation();
+        $request->where('title', 'Good');
+        $results = $request->results();
+
+        $this->assertCount(1, $results);
+        $this->assertEquals('Good', $results->first()->title);
+    }
 }

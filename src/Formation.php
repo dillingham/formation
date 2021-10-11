@@ -62,6 +62,13 @@ class Formation extends FormRequest
     protected $results = [];
 
     /**
+     * The conditions.
+     *
+     * @var array
+     */
+    protected $conditions = [];
+
+    /**
      * If request was called.
      *
      * @var bool
@@ -144,6 +151,7 @@ class Formation extends FormRequest
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
         $query = $this->applyFilters($query);
+        $query = $this->applyConditions($query);
 
         return $query;
     }
@@ -204,6 +212,17 @@ class Formation extends FormRequest
         }
 
         return $query;
+    }
+
+    /**
+     * Apply conditions to the query.
+     *
+     * @var Builder
+     * @return Builder
+     */
+    protected function applyConditions($query)
+    {
+        return $query->where($this->conditions);
     }
 
     /**
@@ -300,6 +319,13 @@ class Formation extends FormRequest
     public function filters(): array
     {
         return [];
+    }
+
+    public function where($key, $value): Formation
+    {
+        $this->conditions[$key] = $value;
+
+        return $this;
     }
 
     public function getSortableKeys()
