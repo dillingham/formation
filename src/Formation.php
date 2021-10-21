@@ -3,56 +3,62 @@
 namespace Dillingham\Formation;
 
 use Dillingham\Formation\Exceptions\PageExceededException;
-use Exception;
-use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
 class Formation extends FormRequest
 {
     /**
+     * The model instance.
+     *
+     * @var Model
+     */
+    public $model;
+
+    /**
+     * The select option display column.
+     *
+     * @var array
+     */
+    public $display = 'id';
+
+    /**
      * Array of columns allowed to search by.
      *
      * @var array
      */
-    protected $search = [];
+    public $search = [];
 
     /**
      * Array of columns allowed to order by.
      *
      * @var array
      */
-    protected $sort = ['created_at'];
-
-    /**
-     * Array of columns allowed to filter by.
-     *
-     * @var array
-     */
-    protected $filter = [];
+    public $sort = ['created_at'];
 
     /**
      * The maximum number of items per page.
      *
      * @var int
      */
-    protected $maxPerPage = 100;
-
-    /**
-     * The query builder instance.
-     *
-     * @var Builder
-     */
-    protected $builder;
+    public $maxPerPage = 100;
 
     /**
      * The default parameters.
      *
      * @var mixed
      */
-    protected $defaults = [];
+    public $defaults = [];
+
+    /**
+     * The select overrides.
+     *
+     * @var mixed
+     */
+    public $select = [];
 
     /**
      * The results.
@@ -147,9 +153,11 @@ class Formation extends FormRequest
     {
         $this->applyDefaults();
 
-        $query = $this->builder();
+        $query = app($this->model)->query();
+        $query = $this->scope($query);
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
+        $query = $this->applySelect($query);
         $query = $this->applyFilters($query);
         $query = $this->applyConditions($query);
 
@@ -157,13 +165,14 @@ class Formation extends FormRequest
     }
 
     /**
-     * Get the query to add conditions to.
+     * Apply scope to the model.
      *
+     * @var Builder
      * @return Builder
      */
-    public function builder()
+    public function scope($query)
     {
-        throw new Exception('A Formation must have a builder() method', 500);
+        return $query;
     }
 
     /**
@@ -223,6 +232,21 @@ class Formation extends FormRequest
     protected function applyConditions($query)
     {
         return $query->where($this->conditions);
+    }
+
+    /**
+     * Apply selects to the query.
+     *
+     * @var Builder
+     * @return Builder
+     */
+    protected function applySelect($query)
+    {
+        if(count($this->select)) {
+            return $query->select($this->select);
+        }
+
+        return $query;
     }
 
     /**
@@ -326,6 +350,21 @@ class Formation extends FormRequest
         $this->conditions[$key] = $value;
 
         return $this;
+    }
+
+    public function select(array $select): Formation
+    {
+        $this->select = $select;
+
+        return $this;
+    }
+
+    public function options(): Formation
+    {
+        return $this->select([
+            $this->display . ' as display',
+            app($this->model)->getKeyName() . ' as value',
+        ]);
     }
 
     public function getSortableKeys()

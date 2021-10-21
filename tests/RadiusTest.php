@@ -33,6 +33,8 @@ class RadiusTest extends TestCase
 
     public function test_filtering_radius()
     {
+        $this->withoutExceptionHandling();
+
         $this->get('posts?distance=2&latitude=40.75178128662803&longitude=-73.97552835820437')
             ->assertJsonCount(2, 'data');
 

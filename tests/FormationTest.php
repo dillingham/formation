@@ -935,13 +935,6 @@ class FormationTest extends TestCase
         $this->assertEquals([], $request->filters());
     }
 
-    public function test_list_requests_must_have_builder()
-    {
-        $this->expectException(Exception::class);
-
-        (new Formation())->results();
-    }
-
     public function test_calling_results_twice_is_cached()
     {
         $count = 0;

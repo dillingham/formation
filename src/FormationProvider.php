@@ -32,6 +32,8 @@ class FormationProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->publishes([
+            __DIR__.'/../config/formations.php' => config_path('formations.php')
+        ], 'formations');
     }
 }
