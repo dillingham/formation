@@ -164,13 +164,13 @@ class Formation extends FormRequest
         return $query;
     }
 
-    /**
-     * Apply scope to the model.
+   /**
+     * Define the scope.
      *
-     * @var Builder
-     * @return Builder
+     * @param mixed $query
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scope(Builder $query): Builder
+    public function scope($query)
     {
         return $query;
     }
