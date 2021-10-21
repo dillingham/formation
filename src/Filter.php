@@ -4,9 +4,7 @@ namespace Dillingham\Formation;
 
 use Dillingham\Formation\Exceptions\ReservedException;
 use Dillingham\Formation\Exceptions\UnauthorizedException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -322,7 +320,7 @@ class Filter
     {
         $this->withRules('nullable|date');
 
-        $this->withQuery(function (Builder $query) {
+        $this->withQuery(function ($query) {
             $query->where(function ($query) {
                 foreach (Arr::wrap($this->value) as $value) {
                     $query->orWhereDate($this->key, Carbon::parse($value));
@@ -398,7 +396,7 @@ class Filter
 
         $this->withRules('nullable|numeric');
 
-        $this->withQuery(function (Builder $query) {
+        $this->withQuery(function ($query) {
             $query->has($this->key, '=', $this->value['count']);
         });
 

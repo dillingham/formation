@@ -57,22 +57,6 @@ Create a formation class using artisan:
 php artisan make:formation ArticleFormation
 ```
 
-Then typehint in your controller and call `->results()` to execute.
-
-```php
-<?php
-
-class ArticleController
-{
-    public function index(ArticleFormation $request)
-    {
-        return view('articles.index', [
-            'articles' => $request->results()
-        ]);
-    }
-}
-```
-And here is an example of a configured Formation:
 
 ```php
 <?php
@@ -84,6 +68,20 @@ use Dillingham\Formation\Formation;
 
 class ArticleFormation extends Formation
 {
+    /**
+     * The model class,
+     *
+     * @var array
+     */
+    public $model = \App\Models\Article::class;
+    
+    /**
+     * The column to use for select options,
+     *
+     * @var array
+     */
+    public $display = 'title';
+    
     /**
      * The searchable columns,
      *
@@ -99,21 +97,11 @@ class ArticleFormation extends Formation
     public $sort = ['created_at', 'comments'];
 
     /**
-     * Define the query.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function query()
-    {
-        return Article::query();
-    }
-
-    /**
      * Define the filters.
      *
      * @return array
      */
-    public function filters()
+    public function filters():array
     {
         return [
             Filter::make('author')->related(),
@@ -126,13 +114,27 @@ class ArticleFormation extends Formation
 
 ---
 
-
-Below are the many options available for configuring Formations.
-
 #### The results
 
 All results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.
 
+Simply typehint in your controller and call `->results()` to execute.
+
+```php
+<?php
+
+class ArticleController
+{
+    public function index(ArticleFormation $request)
+    {
+        return view('articles.index', [
+            'articles' => $request->results()
+        ]);
+    }
+}
+```
+
+The URL controls the `results` depending on the settings below.
 # Search
 Define columns or relationship columns to search:
 
@@ -479,7 +481,47 @@ public function index($author_id, ArticleFormation $request)
 }
 ```
 
-# Author
+### Formatting select options
 
+Use `options()` to return results in the following format:
+```php
+$request->options()->results()
+```
+```json
+{
+    "data": [
+        {
+            "display": 'Article with ID 1',
+            "value": 1
+        }
+    ],
+    "links": {...},
+    "meta": {...}
+}
+```
+
+### Automatically route select options
+
+Publish the config automatically with the following command:
+```
+php artisan vendor:publish --tag=formations
+```
+Then add a route using this package's `SelectOptionController`
+```php
+use \Dillingham\Formation\Http\Controllers\SelectOptionController;
+```
+```php
+Route::get('options/{resource}', SelectOptionController::class);
+```
+The `{resource}` will reference the key in the formations config
+```php
+'options' => [
+    'users' => \App\Formations\UserFormation::class,
+]
+```
+
+`/options/users` routes to the `UserFormation` + allow search / filters etc
+
+# Author
 
 Hi, [@im_brian_d](https://twitter.com/im_brian_d), software developer and Laravel enthusiast.

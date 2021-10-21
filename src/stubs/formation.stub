@@ -8,6 +8,20 @@ use Dillingham\Formation\Formation;
 class {{ class }} extends Formation
 {
     /**
+     * The model class,
+     *
+     * @var array
+     */
+    public $model = \App\Models\Model::class;
+
+    /**
+     * The display column for options,
+     *
+     * @var array
+     */
+    public $display = 'id';
+
+    /**
      * The searchable columns,
      *
      * @var array
@@ -26,25 +40,9 @@ class {{ class }} extends Formation
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function builder()
+    public function scope(Builder $query)
     {
-        return Model::query();
-    }
-
-    /**
-     * Define the fields.
-     *
-     * @return array
-     */
-    public function fields()
-    {
-        return [
-            Field::make('id'),
-            //
-            Field::make('created_at'),
-            Field::make('updated_at'),
-            Field::make('deleted_at'),
-        ];
+        return $query;
     }
 
     /**
@@ -56,18 +54,8 @@ class {{ class }} extends Formation
     {
         return [
             Filter::make('created_at')->dateRange(),
-            //
-        ];
-    }
-
-    /**
-     * Define the related.
-     *
-     * @return array
-     */
-    public function related()
-    {
-        return [
+            Filter::make('with-deleted')->withTrashed(),
+            Filter::make('deleted')->onlyTrashed(),
             //
         ];
     }

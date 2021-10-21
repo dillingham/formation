@@ -7,6 +7,10 @@ use Dillingham\Formation\Formation;
 
 class PostFormation extends Formation
 {
+    public $model = Post::class;
+
+    public $display = 'title';
+
     public $search = [
         'title',
         'comments.body',
@@ -29,11 +33,6 @@ class PostFormation extends Formation
         return [
             'rule_test' => 'nullable|in:allowed-value',
         ];
-    }
-
-    public function builder()
-    {
-        return Post::query();
     }
 
     public function filters():array
