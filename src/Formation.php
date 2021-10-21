@@ -170,7 +170,7 @@ class Formation extends FormRequest
      * @var Builder
      * @return Builder
      */
-    public function scope($query)
+    public function scope(Builder $query): Builder
     {
         return $query;
     }
