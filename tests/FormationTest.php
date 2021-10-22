@@ -11,6 +11,7 @@ use Dillingham\Formation\Tests\Fixtures\Like;
 use Dillingham\Formation\Tests\Fixtures\Post;
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\Tag;
+use Dillingham\Formation\Tests\Fixtures\User;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -124,7 +125,49 @@ class FormationTest extends TestCase
             ->assertJsonPath('data.2.title', '3');
     }
 
-    public function test_sorting_relationships()
+    public function test_sorting_relationships_belongs_to()
+    {
+        $abby = User::factory()->create(['name' => 'abby']);
+        $brad = User::factory()->create(['name' => 'brad']);
+        $casey = User::factory()->create(['name' => 'casey']);
+
+        $abbyPost = Post::factory()->create(['author_id' => $abby->id]);
+        $bradPost = Post::factory()->create(['author_id' => $brad->id]);
+        $caseyPost = Post::factory()->create(['author_id' => $casey->id]);
+
+        $this->get('/posts?sort-desc=author.name')
+            ->assertJsonPath('data.2.id', $caseyPost->id)
+            ->assertJsonPath('data.1.id', $bradPost->id)
+            ->assertJsonPath('data.0.id', $abbyPost->id);
+
+        $this->get('/posts?sort=author.name')
+            ->assertJsonPath('data.0.id', $abbyPost->id)
+            ->assertJsonPath('data.1.id', $bradPost->id)
+            ->assertJsonPath('data.2.id', $caseyPost->id);
+    }
+
+    public function test_sorting_relationships_belongs_to_with_alias()
+    {
+        $abby = User::factory()->create(['name' => 'abby']);
+        $brad = User::factory()->create(['name' => 'brad']);
+        $casey = User::factory()->create(['name' => 'casey']);
+
+        $abbyPost = Post::factory()->create(['author_id' => $abby->id]);
+        $bradPost = Post::factory()->create(['author_id' => $brad->id]);
+        $caseyPost = Post::factory()->create(['author_id' => $casey->id]);
+
+        $this->get('/posts?sort-desc=author_name')
+            ->assertJsonPath('data.2.id', $caseyPost->id)
+            ->assertJsonPath('data.1.id', $bradPost->id)
+            ->assertJsonPath('data.0.id', $abbyPost->id);
+
+        $this->get('/posts?sort=author_name')
+            ->assertJsonPath('data.0.id', $abbyPost->id)
+            ->assertJsonPath('data.1.id', $bradPost->id)
+            ->assertJsonPath('data.2.id', $caseyPost->id);
+    }
+
+    public function test_sorting_relationships_has_many()
     {
         $threeComments = Post::factory()->has(
             Comment::factory()->count(3)
@@ -149,7 +192,7 @@ class FormationTest extends TestCase
             ->assertJsonPath('data.2.id', $threeComments->id);
     }
 
-    public function test_sorting_relationship_columns()
+    public function test_sorting_relationship_has_many_columns()
     {
         $twoUpvote = Post::factory()->create();
         $oneUpvote = Post::factory()->create();
@@ -170,7 +213,7 @@ class FormationTest extends TestCase
             ->assertJsonPath('data.2.id', $sixUpvote->id);
     }
 
-    public function test_sorting_relationship_column_with_alias()
+    public function test_sorting_relationship_has_many_column_with_alias()
     {
         $twoDownvote = Post::factory()->create();
         $oneDownvote = Post::factory()->create();

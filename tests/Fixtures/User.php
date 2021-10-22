@@ -2,9 +2,9 @@
 
 namespace Dillingham\Formation\Tests\Fixtures;
 
+use Dillingham\Formation\Tests\Fixtures\Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Orchestra\Testbench\Factories\UserFactory;
 
 class User extends Authenticatable
 {

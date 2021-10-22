@@ -19,6 +19,7 @@ class PostFormation extends Formation
 
     public $sort = [
         'title',
+        'author.name as author_name',
         'comments',
         'comments.upvotes',
         'comments.downvotes as disliked',
