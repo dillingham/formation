@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures\Models;
 
 use Dillingham\Formation\Tests\Fixtures\Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

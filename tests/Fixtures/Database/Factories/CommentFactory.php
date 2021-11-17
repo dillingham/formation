@@ -2,7 +2,7 @@
 
 namespace Dillingham\Formation\Tests\Fixtures\Database\Factories;
 
-use Dillingham\Formation\Tests\Fixtures\Comment;
+use Dillingham\Formation\Tests\Fixtures\Models\Comment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommentFactory extends Factory

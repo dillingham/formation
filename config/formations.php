@@ -3,15 +3,10 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Enabled formation options
+    | Response mode for formation
     |--------------------------------------------------------------------------
-    |
-    | Here you may specify the formations that should be able to be used by
-    | by SelectOptionsController that comes with the formations package.
-    | The key used in this array will be the route key: /{resource}
+    | options: api, inertia, blade
     |
     */
-    'options' => [
-        // 'users' => \App\Formations\UserFormation::class,
-    ]
+    'mode' => 'api',
 ];

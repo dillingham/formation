@@ -2,8 +2,8 @@
 
 namespace Dillingham\Formation\Tests\Fixtures\Database\Factories;
 
-use Dillingham\Formation\Tests\Fixtures\Post;
-use Dillingham\Formation\Tests\Fixtures\User;
+use Dillingham\Formation\Tests\Fixtures\Models\Post;
+use Dillingham\Formation\Tests\Fixtures\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory
