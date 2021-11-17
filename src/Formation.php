@@ -3,6 +3,7 @@
 namespace Dillingham\Formation;
 
 use Dillingham\Formation\Exceptions\PageExceededException;
+use Dillingham\Formation\Http\Controllers\ResourceController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,34 @@ class Formation extends FormRequest
      * @var Model
      */
     public $model;
+
+    /**
+     * The resource controller.
+     *
+     * @var string
+     */
+    public $controller = ResourceController::class;
+
+    /**
+     * The default create request.
+     *
+     * @var string
+     */
+    public $create = CreateRequest::class;
+
+    /**
+     * The default update request.
+     *
+     * @var string
+     */
+    public $update = UpdateRequest::class;
+
+    /**
+     * The default api resource.
+     *
+     * @var string
+     */
+    public $resource = Resource::class;
 
     /**
      * The select option display column.
@@ -339,6 +368,22 @@ class Formation extends FormRequest
     {
         return [];
     }
+
+    public function rulesForIndexing(): array
+    {
+        return [];
+    }
+
+    public function rulesForCreating(): array
+    {
+        return [];
+    }
+
+    public function rulesForUpdating(): array
+    {
+        return [];
+    }
+
 
     public function filters(): array
     {
