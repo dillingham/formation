@@ -1,11 +1,18 @@
 <?php
 
-namespace Dillingham\Formation\Tests\Fixtures;
+namespace Dillingham\Formation\Tests\Fixtures\Models;
 
 use Dillingham\Formation\Tests\Fixtures\Database\Factories\PostFactory;
+use Dillingham\Formation\Tests\Fixtures\Models\Comment;
+use Dillingham\Formation\Tests\Fixtures\Models\Like;
+use Dillingham\Formation\Tests\Fixtures\Models\PostTag;
+use Dillingham\Formation\Tests\Fixtures\Models\Tag;
+use Dillingham\Formation\Tests\Fixtures\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use function Dillingham\Formation\Tests\Fixtures\auth;
 
 class Post extends Model
 {
@@ -21,7 +28,7 @@ class Post extends Model
     public function like()
     {
         return $this->hasOne(Like::class)
-            ->where('user_id', auth()->id());
+            ->where('user_id', Auth::id());
     }
 
     public function tags()
