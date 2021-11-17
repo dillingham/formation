@@ -23,6 +23,7 @@ class FormationProvider extends ServiceProvider
                 FormationMakeCommand::class,
             ]);
         }
+        $this->mergeConfigFrom( __DIR__.'/../config/formations.php', 'formations');
     }
 
     /**

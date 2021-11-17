@@ -3,8 +3,11 @@
 namespace Dillingham\Formation\Tests;
 
 use Dillingham\Formation\FormationProvider;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\Fixtures\TestProvider;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -16,6 +19,7 @@ class TestCase extends Orchestra
     {
         return [
             FormationProvider::class,
+            TestProvider::class,
         ];
     }
 
