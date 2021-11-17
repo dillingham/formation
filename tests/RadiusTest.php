@@ -3,7 +3,7 @@
 namespace Dillingham\Formation\Tests;
 
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
-use Dillingham\Formation\Tests\Fixtures\Post;
+use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Illuminate\Support\Facades\Route;
 
 class RadiusTest extends TestCase
