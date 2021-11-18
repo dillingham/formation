@@ -61,11 +61,11 @@ class Controller extends BaseController
             $request = $this->updateRequest();
         }
 
-        if (empty($request->rules())) {
-            return Request::all();
+        if (! empty($request->rules())) {
+            return $request->validated();
         }
 
-        return $request->validated();
+        return Request::all();
     }
 
     public function check($ability, $arguments = [])
