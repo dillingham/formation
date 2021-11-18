@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation;
+namespace Dillingham\Formation\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
@@ -35,7 +35,7 @@ class FormationMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->resolveStubPath('/stubs/formation.stub');
+        return $this->resolveStubPath('formation.stub');
     }
 
     /**
@@ -46,9 +46,9 @@ class FormationMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(trim("stubs/$stub", '/')))
             ? $customPath
-            : __DIR__.$stub;
+            : __DIR__.'/../../stubs/'.$stub;
     }
 
     /**

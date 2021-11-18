@@ -4,6 +4,7 @@ namespace Dillingham\Formation;
 
 use Dillingham\Formation\Exceptions\ReservedException;
 use Dillingham\Formation\Exceptions\UnauthorizedException;
+use Dillingham\Formation\Scopes\SearchScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -301,7 +302,7 @@ class Filter
      */
     public function between($name, array $range)
     {
-        $this->withQuery(function ($query) use ($name, $range) {
+        $this->withQuery(function ($query) use($name, $range) {
             if ($this->value === $name) {
                 sort($range);
                 $query->whereBetween($this->key, $range);
@@ -437,18 +438,18 @@ class Filter
         $this->withRules('nullable');
 
         $this->withQuery(function ($query) {
+
             $this->validateMultiple();
 
             $relation = $query->getModel()->{$this->key}();
 
-            if (is_a($relation, BelongsTo::class)) {
+            if(is_a($relation, BelongsTo::class)) {
                 $key = $relation->getForeignKeyName();
                 $query->whereIn($key, Arr::wrap($this->value));
-
                 return $query;
             }
 
-            $query->whereHas($this->key, function ($query) use ($relation) {
+            $query->whereHas($this->key, function($query) use($relation) {
                 $query->whereIn(
                     $relation->getQualifiedRelatedKeyName(),
                     Arr::wrap($this->value)
@@ -506,7 +507,7 @@ class Filter
         $filter->withRules(['numeric', 'required_with:latitude,distance'], 'longitude');
         $filter->withRules(['numeric', 'required_with:longitude,distance'], 'latitude');
 
-        $filter->withQuery(function ($query) use ($filter) {
+        $filter->withQuery(function ($query) use($filter) {
             $distance = $filter->value['distance'];
             $method = 'ST_Distance_Sphere(Point(longitude, latitude), Point(?, ?))';
             $conversion = '* 0.000621371192';
@@ -534,18 +535,20 @@ class Filter
         $filter->withRules(['numeric', 'required_with:sw_lat,sw_lng,ne_lng'], 'ne_lat');
         $filter->withRules(['numeric', 'required_with:sw_lat,sw_lng,ne_lat'], 'ne_lng');
 
-        $filter->withQuery(function ($query) use ($filter) {
+        $filter->withQuery(function ($query) use($filter) {
+
             $range = ($filter->value['sw_lat'] < $filter->value['ne_lat'])
-                ? [$filter->value['sw_lat'], $filter->value['ne_lat']]
-                : [$filter->value['ne_lat'], $filter->value['sw_lat']];
+                ? [ $filter->value['sw_lat'], $filter->value['ne_lat'] ]
+                : [ $filter->value['ne_lat'], $filter->value['sw_lat'] ];
 
             $query->whereBetween('latitude', $range);
 
             $range = ($filter->value['sw_lng'] < $filter->value['ne_lng'])
-                ? [$filter->value['sw_lng'], $filter->value['ne_lng']]
-                : [$filter->value['ne_lng'], $filter->value['sw_lng']];
+                ? [ $filter->value['sw_lng'], $filter->value['ne_lng'] ]
+                : [ $filter->value['ne_lng'], $filter->value['sw_lng'] ];
 
             $query->whereBetween('longitude', $range);
+
         });
 
         return $filter;
@@ -765,7 +768,6 @@ class Filter
 
         if (is_array($this->publicKey)) {
             $this->value = $parameters;
-
             return;
         }
 
@@ -773,7 +775,6 @@ class Filter
             $this->modifier = array_keys($parameters)[0];
             $this->value = array_values($parameters)[0];
             $this->value = $this->applyCents($this->value);
-
             return; // no array values needed because its a single value
         }
 
@@ -824,15 +825,15 @@ class Filter
      */
     protected function applyCents($value)
     {
-        if (! $this->cents) {
+        if(!$this->cents) {
             return $value;
         }
 
-        if (! is_array($value)) {
+        if(!is_array($value)) {
             return $value * 100;
         }
 
-        foreach ($value as $k => $v) {
+        foreach($value as $k => $v) {
             $value[$k] = $v * 100;
         }
 

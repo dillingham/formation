@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation;
+namespace Dillingham\Formation\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 

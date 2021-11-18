@@ -2,8 +2,12 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Http\Requests\CreateRequest;
+use Dillingham\Formation\Http\Resources\Resource;
+use Dillingham\Formation\Http\Requests\UpdateRequest;
 use Dillingham\Formation\Exceptions\PageExceededException;
 use Dillingham\Formation\Http\Controllers\ResourceController;
+use Dillingham\Formation\Scopes\SearchScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -193,7 +197,7 @@ class Formation extends FormRequest
         return $query;
     }
 
-    /**
+   /**
      * Define the scope.
      *
      * @param mixed $query
@@ -271,7 +275,7 @@ class Formation extends FormRequest
      */
     protected function applySelect($query)
     {
-        if (count($this->select)) {
+        if(count($this->select)) {
             return $query->select($this->select);
         }
 
@@ -384,30 +388,31 @@ class Formation extends FormRequest
         return [];
     }
 
+
     public function filters(): array
     {
         return [];
     }
 
-    public function where($key, $value): self
+    public function where($key, $value): Formation
     {
         $this->conditions[$key] = $value;
 
         return $this;
     }
 
-    public function select(array $select): self
+    public function select(array $select): Formation
     {
         $this->select = $select;
 
         return $this;
     }
 
-    public function options(): self
+    public function options(): Formation
     {
         return $this->select([
-            $this->display.' as display',
-            app($this->model)->getKeyName().' as value',
+            $this->display . ' as display',
+            app($this->model)->getKeyName() . ' as value',
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Commands\FormationMakeCommand;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;

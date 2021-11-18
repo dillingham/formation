@@ -1,16 +1,16 @@
 <?php
 
-namespace Dillingham\Formation;
+namespace Dillingham\Formation\Http\Requests;
 
+use Dillingham\Formation\Manager;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 
-class UpdateRequest extends FormRequest
+class CreateRequest extends FormRequest
 {
     public function rules(): array
     {
         return app(Manager::class)
             ->formation()
-            ->rulesForUpdating();
+            ->rulesForCreating();
     }
 }
