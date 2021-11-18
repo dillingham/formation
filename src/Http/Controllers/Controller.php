@@ -31,16 +31,16 @@ class Controller extends BaseController
         $this->middleware(function ($request, $next) use ($manager) {
             $this->current = $manager->current();
 
-            $method = Route::current()->getActionMethod();
-
-            $this->resolveResource($method);
+            $this->resolveResourceBinding();
 
             return $next($request);
         });
     }
 
-    protected function resolveResource($method)
+    protected function resolveResourceBinding()
     {
+        $method = Route::current()->getActionMethod();
+
         if (! in_array($method, ['index', 'create', 'store'])) {
             $this->resolvedResource = $this->resource();
 

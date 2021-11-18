@@ -71,14 +71,14 @@ class ArticleFormation extends Formation
     /**
      * The model class,
      *
-     * @var array
+     * @var string
      */
     public $model = \App\Models\Article::class;
     
     /**
      * The column to use for select options,
      *
-     * @var array
+     * @var string
      */
     public $display = 'title';
     
@@ -114,11 +114,9 @@ class ArticleFormation extends Formation
 
 ---
 
-#### The results
+## Formation Typehint 
 
-All results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.
-
-Simply typehint in your controller and call `->results()` to execute.
+Use a formation like a form request typehint for your index routes. All results are [paginated](https://laravel.com/docs/eloquent-resources#pagination) and nested within `data`.  Simply typehint in your controller and call `->results()` to execute. The URL controls the `results` depending on the filter settings below.
 
 ```php
 <?php
@@ -134,8 +132,20 @@ class ArticleController
 }
 ```
 
-The URL controls the `results` depending on the settings below.
-# Search
+## Formation Routing
+Full resourceful controllers are available including soft delete endpoints. Use policies, form requests & api resources to control the behavior.
+```php
+Route::formation('articles', ArticleFormation::class);
+```
+Then add the following class defintions to your formations:
+```php
+public $create = CreateArticleRequest::class;
+public $update = UpdateArticleRequest::class;
+public $resource = ArticleResource::class;
+```
+The config/formations.php `mode` determins responses.
+
+## Search
 Define columns or relationship columns to search:
 
 ```php
@@ -148,7 +158,7 @@ public $search = ['title', 'comments.body'];
 
 ---
 
-# Sort
+## Sort
 
 Define which columns are sortable:
 ```php

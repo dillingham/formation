@@ -8,21 +8,21 @@ use Dillingham\Formation\Formation;
 class {{ class }} extends Formation
 {
     /**
-     * The model class,
+     * The model class.
      *
-     * @var array
+     * @var string
      */
     public $model = \App\Models\Model::class;
 
     /**
-     * The display column for options,
+     * The display column for options.
      *
-     * @var array
+     * @var string
      */
     public $display = 'id';
 
     /**
-     * The searchable columns,
+     * The searchable columns.
      *
      * @var array
      */
