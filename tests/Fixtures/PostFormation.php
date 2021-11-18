@@ -73,14 +73,14 @@ class PostFormation extends Formation
                 }),
 
             Filter::make('length-range', 'length')
-                ->between('small', [1,10])
-                ->between('medium', [11,20])
-                ->between('large', [21,30]),
+                ->between('small', [1, 10])
+                ->between('medium', [11, 20])
+                ->between('large', [21, 30]),
 
             Filter::make('length-range', 'length')
-                ->between('small', [1,10])
-                ->between('medium', [11,20])
-                ->between('large', [21,30]),
+                ->between('small', [1, 10])
+                ->between('medium', [11, 20])
+                ->between('large', [21, 30]),
 
             Filter::make('money', 'length')->asCents(),
 

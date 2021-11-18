@@ -30,7 +30,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        if(! $this->useMysql) {
+        if (! $this->useMysql) {
             $app['config']->set('database.default', 'sqlite');
             $app['config']->set('database.connections.sqlite', [
                 'driver' => 'sqlite',

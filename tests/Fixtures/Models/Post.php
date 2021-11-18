@@ -2,6 +2,7 @@
 
 namespace Dillingham\Formation\Tests\Fixtures\Models;
 
+use function Dillingham\Formation\Tests\Fixtures\auth;
 use Dillingham\Formation\Tests\Fixtures\Database\Factories\PostFactory;
 use Dillingham\Formation\Tests\Fixtures\Models\Comment;
 use Dillingham\Formation\Tests\Fixtures\Models\Like;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-use function Dillingham\Formation\Tests\Fixtures\auth;
 
 class Post extends Model
 {

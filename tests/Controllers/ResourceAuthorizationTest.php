@@ -3,8 +3,8 @@
 namespace Dillingham\Formation\Tests\Controllers;
 
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Dillingham\Formation\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ResourceAuthorizationTest extends TestCase
 {

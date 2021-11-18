@@ -2,8 +2,8 @@
 
 namespace Dillingham\Formation\Tests\Fixtures;
 
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User;
 
 class PostPolicy
 {

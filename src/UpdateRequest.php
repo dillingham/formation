@@ -11,7 +11,7 @@ class UpdateRequest extends FormRequest
 
     public function validated(): array
     {
-        if(empty($this->rules)) {
+        if (empty($this->rules)) {
             return Request::all();
         }
 

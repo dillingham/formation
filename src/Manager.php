@@ -25,9 +25,9 @@ class Manager
     {
         $name = $this->getRouteName();
 
-        foreach($this->resources as $resource) {
-            foreach($resource['routes'] as $route) {
-                if($route['key'] === $name) {
+        foreach ($this->resources as $resource) {
+            foreach ($resource['routes'] as $route) {
+                if ($route['key'] === $name) {
                     return $resource;
                 }
             }

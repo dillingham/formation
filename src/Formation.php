@@ -193,7 +193,7 @@ class Formation extends FormRequest
         return $query;
     }
 
-   /**
+    /**
      * Define the scope.
      *
      * @param mixed $query
@@ -271,7 +271,7 @@ class Formation extends FormRequest
      */
     protected function applySelect($query)
     {
-        if(count($this->select)) {
+        if (count($this->select)) {
             return $query->select($this->select);
         }
 
@@ -384,31 +384,30 @@ class Formation extends FormRequest
         return [];
     }
 
-
     public function filters(): array
     {
         return [];
     }
 
-    public function where($key, $value): Formation
+    public function where($key, $value): self
     {
         $this->conditions[$key] = $value;
 
         return $this;
     }
 
-    public function select(array $select): Formation
+    public function select(array $select): self
     {
         $this->select = $select;
 
         return $this;
     }
 
-    public function options(): Formation
+    public function options(): self
     {
         return $this->select([
-            $this->display . ' as display',
-            app($this->model)->getKeyName() . ' as value',
+            $this->display.' as display',
+            app($this->model)->getKeyName().' as value',
         ]);
     }
 

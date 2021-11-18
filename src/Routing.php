@@ -11,8 +11,11 @@ use Illuminate\Support\Str;
 class Routing
 {
     protected $resource;
+
     protected $routes = [];
+
     protected $formation;
+
     protected $prefix;
 
     protected $routeTypes = [
@@ -53,7 +56,7 @@ class Routing
                 'name' => "$this->resource.$name",
                 'key' => $this->prefix ? "$this->prefix.$this->resource.$name" : "$this->resource.$name",
                 'type' => $name,
-                'with-trashed' => in_array($name, ['show', 'restore', 'force-delete'])
+                'with-trashed' => in_array($name, ['show', 'restore', 'force-delete']),
             ];
         }
 
@@ -64,7 +67,7 @@ class Routing
     {
         $routes = $this->make();
 
-        foreach($routes as $route) {
+        foreach ($routes as $route) {
             $router
                 ->addRoute($route['verb'], $route['endpoint'], $route['action'])
                 ->name($route['name'])

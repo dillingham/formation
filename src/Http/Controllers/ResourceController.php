@@ -6,7 +6,7 @@ class ResourceController extends Controller
 {
     public function index()
     {
-        $this->allow('viewAny', $this->model());
+        $this->check('viewAny', $this->model());
 
         return $this->response(
             'index',
@@ -16,14 +16,14 @@ class ResourceController extends Controller
 
     public function create()
     {
-        $this->allow('create', $this->model());
+        $this->check('create', $this->model());
 
         return $this->response('create');
     }
 
     public function store()
     {
-        $this->allow('create', $this->model());
+        $this->check('create', $this->model());
 
         $values = $this->createRequest()->validated();
 
@@ -36,7 +36,7 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('view', $resource);
+        $this->check('view', $resource);
 
         return $this->response('show', $resource);
     }
@@ -45,7 +45,7 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('update', $resource);
+        $this->check('update', $resource);
 
         return $this->response('edit', $resource);
     }
@@ -54,7 +54,7 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('update', $resource);
+        $this->check('update', $resource);
 
         $values = $this->updateRequest()->validated();
 
@@ -67,7 +67,7 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('delete', $resource);
+        $this->check('delete', $resource);
 
         $resource->delete();
 
@@ -78,7 +78,7 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('restore', $resource);
+        $this->check('restore', $resource);
 
         $resource->restore();
 
@@ -89,11 +89,10 @@ class ResourceController extends Controller
     {
         $resource = $this->resource();
 
-        $this->allow('forceDelete', $resource);
+        $this->check('forceDelete', $resource);
 
         $resource->forceDelete();
 
         return $this->response('force-delete');
     }
 }
-
