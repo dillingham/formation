@@ -20,8 +20,6 @@ class ControllerTest extends TestCase
 
     public function test_resource_terms()
     {
-        app(Manager::class)->setRouteName('posts.index');
-
         $controller = app(Controller::class);
         $controller->current['resource'] = 'product-lines';
 

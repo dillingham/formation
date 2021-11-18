@@ -44,7 +44,7 @@ class FormationProvider extends ServiceProvider
             $routes = (new Routing($resource, $formation, $routes, $this->getLastGroupPrefix()))->create($this);
             $resourceRouteKey = (string) Str::of($resource)->replace('-', '_')->singular();
 
-            app(Manager::class)->create([
+            app(Manager::class)->register([
                 'formation' => $formation,
                 'resource' => $resource,
                 'routes' => $routes,
