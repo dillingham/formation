@@ -51,6 +51,23 @@ class Controller extends BaseController
         }
     }
 
+    public function values()
+    {
+        $method = Route::current()->getActionMethod();
+
+        if($method === 'store') {
+            $request = $this->createRequest();
+        } else {
+            $request = $this->updateRequest();
+        }
+
+        if (empty($request->rules())) {
+            return Request::all();
+        }
+
+        return $request->validated();
+    }
+
     public function check($ability, $arguments = [])
     {
         if ($this->hasPolicyMethod($ability)) {

@@ -34,4 +34,24 @@ class ControllerTest extends TestCase
         $this->assertEquals('productLine', $controller->terms('resource.camel'));
         $this->assertEquals('productLines', $controller->terms('resource.camelPlural'));
     }
+
+    public function test_redirect_responses()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_api_responses()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_blade_responses()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_inertia_responses()
+    {
+        $this->markTestIncomplete();
+    }
 }

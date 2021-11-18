@@ -25,9 +25,7 @@ class ResourceController extends Controller
     {
         $this->check('create', $this->model());
 
-        $values = $this->createRequest()->validated();
-
-        $resource = $this->model()->create($values);
+        $resource = $this->model()->create($this->values());
 
         return $this->response('store', $resource);
     }
@@ -56,9 +54,7 @@ class ResourceController extends Controller
 
         $this->check('update', $resource);
 
-        $values = $this->updateRequest()->validated();
-
-        $resource->update($values);
+        $resource->update($this->values());
 
         return $this->response('update', $resource);
     }
