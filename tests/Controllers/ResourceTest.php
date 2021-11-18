@@ -10,6 +10,13 @@ class ResourceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authUser();
+    }
+
     public function test_indexing_a_resource()
     {
         $post = Post::factory()->create();
@@ -56,8 +63,6 @@ class ResourceTest extends TestCase
 
     public function test_showing_a_deleted_resource()
     {
-//        $this->markTestIncomplete('needs fix for soft deleted 404');
-
         $post = Post::factory()->create();
 
         $post->delete();
@@ -83,6 +88,8 @@ class ResourceTest extends TestCase
         $this->put("posts/$post->id/edit", [
             'title' => 'new title'
         ])->assertOk();
+
+        $this->assertEquals('new title', $post->fresh()->title);
     }
 
     public function test_deleting_a_resource()
@@ -90,23 +97,24 @@ class ResourceTest extends TestCase
         $post = Post::factory()->create();
 
         $this->delete("posts/$post->id")->assertOk();
+
+        $this->assertCount(0, Post::all());
+        $this->assertCount(1, Post::withTrashed()->get());
     }
 
     public function test_restoring_a_resource()
     {
-//        $this->markTestIncomplete('needs fix for soft deleted 404');
-
         $post = Post::factory()->create();
 
         $post->delete();
 
         $this->post("posts/$post->id/restore")->assertOk();
+
+        $this->assertCount(1, Post::all());
     }
 
     public function test_force_deleting_a_resource()
     {
-//        $this->markTestIncomplete('needs fix for soft deleted 404');
-
         $post = Post::factory()->create();
 
         $post->delete();

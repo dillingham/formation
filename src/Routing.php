@@ -15,7 +15,7 @@ class Routing
     protected $formation;
     protected $prefix;
 
-    protected array $routeTypes = [
+    protected $routeTypes = [
         'index' => ['GET', 'HEAD'],
         'create' => ['GET', 'HEAD'],
         'show' => ['GET', 'HEAD'],
@@ -64,16 +64,11 @@ class Routing
     {
         $routes = $this->make();
 
-        $singular = (string) Str::of($this->resource)->replace('-', '_')->singular();
-
-        $router->model($singular, app($this->formation)->model);
-
         foreach($routes as $route) {
             $router
                 ->addRoute($route['verb'], $route['endpoint'], $route['action'])
                 ->name($route['name'])
-                ->withTrashed($route['with-trashed'])
-                ->middleware(SubstituteBindings::class);
+                ->withTrashed($route['with-trashed']);
         }
 
         return $routes;

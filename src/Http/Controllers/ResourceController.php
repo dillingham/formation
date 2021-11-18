@@ -2,22 +2,12 @@
 
 namespace Dillingham\Formation\Http\Controllers;
 
-use Dillingham\Formation\Manager;
-use Illuminate\Support\Facades\Gate;
-
 class ResourceController extends Controller
 {
-    public function __construct(Manager $resource)
-    {
-        parent::__construct($resource);
-
-        if (Gate::getPolicyFor($this->formation()->model)) {
-            $this->authorizeResource($this->formation()->model);
-        }
-    }
-
     public function index()
     {
+        $this->allow('viewAny', $this->model());
+
         return $this->response(
             'index',
             $this->formation()->results()
@@ -26,62 +16,82 @@ class ResourceController extends Controller
 
     public function create()
     {
+        $this->allow('create', $this->model());
+
         return $this->response('create');
     }
 
     public function store()
     {
+        $this->allow('create', $this->model());
+
         $values = $this->createRequest()->validated();
 
-        $model = $this->model()->create($values);
+        $resource = $this->model()->create($values);
 
-        return $this->response('store', $model);
+        return $this->response('store', $resource);
     }
 
     public function show()
     {
-        return $this->response('show', $this->resource());
+        $resource = $this->resource();
+
+        $this->allow('view', $resource);
+
+        return $this->response('show', $resource);
     }
 
     public function edit()
     {
-        return $this->response('edit', $this->resource());
+        $resource = $this->resource();
+
+        $this->allow('update', $resource);
+
+        return $this->response('edit', $resource);
     }
 
     public function update()
     {
+        $resource = $this->resource();
+
+        $this->allow('update', $resource);
+
         $values = $this->updateRequest()->validated();
 
-        $this->resource()->update($values);
+        $resource->update($values);
 
-        return $this->response('update', $this->resource());
+        return $this->response('update', $resource);
     }
 
     public function destroy()
     {
-        $this->resource()->delete();
+        $resource = $this->resource();
+
+        $this->allow('delete', $resource);
+
+        $resource->delete();
 
         return $this->response('destroy');
     }
 
     public function restore()
     {
-        $model = $this->resource();
+        $resource = $this->resource();
 
-        $this->authorize('restore', $model);
+        $this->allow('restore', $resource);
 
-        $model->restore();
+        $resource->restore();
 
-        return $this->response('restore', $model);
+        return $this->response('restore', $resource);
     }
 
     public function forceDelete()
     {
-        $model = $this->resource();
+        $resource = $this->resource();
 
-        $this->authorize('forceDelete', $model);
+        $this->allow('forceDelete', $resource);
 
-        $model->forceDelete();
+        $resource->forceDelete();
 
         return $this->response('force-delete');
     }

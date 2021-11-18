@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Request;
 
 class Manager
 {
-    protected string $routeName;
+    protected $routeName;
 
-    protected array $resources = [];
+    protected $resources = [];
 
     public function all()
     {
