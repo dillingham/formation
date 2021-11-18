@@ -1,9 +1,10 @@
 <?php
 
-namespace Dillingham\Formation\Tests;
+namespace Dillingham\Formation\Tests\FilterTests;
 
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 

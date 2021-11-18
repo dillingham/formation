@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation\Tests\Controllers;
+namespace Dillingham\Formation\Tests\ControllerTests;
 
 use Dillingham\Formation\Http\Controllers\Controller;
 use Dillingham\Formation\Manager;

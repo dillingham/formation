@@ -1,12 +1,12 @@
 <?php
 
-namespace Dillingham\Formation\Tests\Controllers;
+namespace Dillingham\Formation\Tests\ControllerTests;
 
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ResourceApiTest extends TestCase
+class ResourceTest extends TestCase
 {
     use RefreshDatabase;
 
