@@ -36,6 +36,20 @@ class PostFormation extends Formation
         ];
     }
 
+    public function rulesForCreating(): array
+    {
+        return [
+            'title' => ['required']
+        ];
+    }
+
+    public function rulesForUpdating(): array
+    {
+        return [
+            'title' => ['required', 'min:10']
+        ];
+    }
+
     public function filters():array
     {
         return [

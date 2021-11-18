@@ -6,7 +6,7 @@ use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ResourceTest extends TestCase
+class ResourceApiTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -15,6 +15,8 @@ class ResourceTest extends TestCase
         parent::setUp();
 
         $this->authUser();
+
+        config()->set('formations.mode', 'api');
     }
 
     public function test_indexing_a_resource()
@@ -86,10 +88,13 @@ class ResourceTest extends TestCase
         $post = Post::factory()->create();
 
         $this->put("posts/$post->id/edit", [
-            'title' => 'new title',
+            'title' => 'new title goes here',
         ])->assertOk();
 
-        $this->assertEquals('new title', $post->fresh()->title);
+        $this->assertEquals(
+            'new title goes here',
+            $post->fresh()->title
+        );
     }
 
     public function test_deleting_a_resource()

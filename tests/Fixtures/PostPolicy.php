@@ -17,7 +17,7 @@ class PostPolicy
      */
     public function viewAny(User $user):bool
     {
-        return config('formations.testing-policies.viewAny', true);
+        return $this->check($user, 'viewAny');
     }
 
     /**
@@ -28,7 +28,7 @@ class PostPolicy
      */
     public function view(User $user):bool
     {
-        return config('formations.testing-policies.view', true);
+        return $this->check($user, 'view');
     }
 
     /**
@@ -39,7 +39,7 @@ class PostPolicy
      */
     public function create(User $user):bool
     {
-        return config('formations.testing-policies.create', true);
+        return $this->check($user, 'create');
     }
 
     /**
@@ -50,7 +50,7 @@ class PostPolicy
      */
     public function update(User $user):bool
     {
-        return config('formations.testing-policies.update', true);
+        return $this->check($user, 'update');
     }
 
     /**
@@ -61,7 +61,7 @@ class PostPolicy
      */
     public function delete(User $user):bool
     {
-        return config('formations.testing-policies.delete', true);
+        return $this->check($user, 'delete');
     }
 
     /**
@@ -72,7 +72,7 @@ class PostPolicy
      */
     public function restore(User $user):bool
     {
-        return config('formations.testing-policies.restore', true);
+        return $this->check($user, 'restore');
     }
 
     /**
@@ -83,6 +83,22 @@ class PostPolicy
      */
     public function forceDelete(User $user):bool
     {
-        return config('formations.testing-policies.forceDelete', true);
+        return $this->check($user, 'forceDelete');
+    }
+
+    /**
+     * Determine whether the user can perform ability.
+     *
+     * @param  User  $user
+     * @param  string  $ability
+     * @return bool
+     */
+    private function check($user, $ability):bool
+    {
+        if(!$user->permissions) {
+            return false;
+        }
+
+        return in_array($ability, json_decode($user->permissions, true));
     }
 }

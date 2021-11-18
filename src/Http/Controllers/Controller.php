@@ -62,6 +62,7 @@ class Controller extends BaseController
         }
 
         if (! empty($request->rules())) {
+            $request->validateResolved();
             return $request->validated();
         }
 
@@ -190,6 +191,10 @@ class Controller extends BaseController
     public function bladeResponse($type, $props = null):string
     {
         $view = $this->terms('resource.slugPlural').'.'.$type;
+
+        if(app()->environment('testing')) {
+            $view = "testing::$view";
+        }
 
         return view($view)->with(
             $this->terms('resource.slugPlural').'.'.$type,

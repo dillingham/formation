@@ -6,6 +6,7 @@ use Dillingham\Formation\FormationProvider;
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\TestProvider;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -65,10 +66,16 @@ class TestCase extends Orchestra
             'name' => 'User',
             'email' => 'user@example.com',
             'password' => '$2y$10$MTibKZXWRvtO2gWpfpsngOp6FQXWUhHPTF9flhsaPdWvRtsyMUlC2',
+            'permissions' => json_encode(['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete']),
         ]);
 
         $this->actingAs($user);
 
         return $user;
+    }
+
+    public function updateAbilities(array $ability)
+    {
+        Auth::user()->update(['permissions' => json_encode($ability)]);
     }
 }

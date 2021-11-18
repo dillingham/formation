@@ -5,8 +5,10 @@ return [
     |--------------------------------------------------------------------------
     | Response mode for formation
     |--------------------------------------------------------------------------
-    | options: api, inertia, blade
+    | When using Route::formation to use built in controllers,
+    | you can control how the behavior of the responses.
+    | the available options are: blade, api, inertia
     |
     */
-    'mode' => 'api',
+    'mode' => 'blade',
 ];

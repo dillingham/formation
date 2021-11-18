@@ -19,79 +19,83 @@ class ResourceAuthorizationTest extends TestCase
 
     public function test_policy_for_indexing_a_resource()
     {
-        config()->set('formations.testing-policies.viewAny', false);
+        $this->updateAbilities([]);
         $this->get('posts')->assertForbidden();
-        config()->set('formations.testing-policies.viewAny', true);
+        $this->updateAbilities(['viewAny']);
         $this->get('posts')->assertOk();
     }
 
     public function test_policy_for_creating_a_resource()
     {
-        config()->set('formations.testing-policies.create', false);
+        $this->updateAbilities([]);
         $this->get('posts/new')->assertForbidden();
-        config()->set('formations.testing-policies.create', true);
+        $this->updateAbilities(['create']);
         $this->get('posts/new')->assertOk();
     }
 
     public function test_policy_for_storing_a_resource()
     {
-        config()->set('formations.testing-policies.create', false);
+        $this->updateAbilities([]);
         $this->post('posts/new')->assertForbidden();
-        config()->set('formations.testing-policies.create', true);
-        $this->post('posts/new')->assertStatus(201);
+        $this->updateAbilities(['create']);
+        $this->post('posts/new', [
+            'title' => 'Blog title'
+        ])->assertRedirect();
     }
 
     public function test_policy_for_showing_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.view', false);
+        $this->updateAbilities([]);
         $this->get("posts/$post->id")->assertForbidden();
-        config()->set('formations.testing-policies.view', true);
+        $this->updateAbilities(['view']);
         $this->get("posts/$post->id")->assertOk();
     }
 
     public function test_policy_for_editing_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.update', false);
+        $this->updateAbilities([]);
         $this->get("posts/$post->id/edit")->assertForbidden();
-        config()->set('formations.testing-policies.update', true);
+        $this->updateAbilities(['update']);
         $this->get("posts/$post->id/edit")->assertOk();
     }
 
     public function test_policy_for_updating_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.update', false);
+        $this->updateAbilities([]);
         $this->put("posts/$post->id/edit")->assertForbidden();
-        config()->set('formations.testing-policies.update', true);
-        $this->put("posts/$post->id/edit")->assertOk();
+        $this->updateAbilities(['update']);
+        $this->put("posts/$post->id/edit", [
+            'title' => 'new title'
+        ])->assertRedirect();
     }
 
     public function test_policy_for_deleting_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.delete', false);
+        $this->updateAbilities([]);
         $this->delete("posts/$post->id")->assertForbidden();
-        config()->set('formations.testing-policies.delete', true);
-        $this->delete("posts/$post->id")->assertOk();
+        $this->updateAbilities(['delete']);
+        $this->delete("posts/$post->id")->assertRedirect();
     }
 
     public function test_policy_for_restoring_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.restore', false);
+        $this->updateAbilities([]);
         $this->post("posts/$post->id/restore")->assertForbidden();
-        config()->set('formations.testing-policies.restore', true);
-        $this->post("posts/$post->id/restore")->assertOk();
+        $this->updateAbilities(['restore',]);
+        $this->post("posts/$post->id/restore")->assertRedirect();
     }
 
     public function test_policy_for_force_deleting_a_resource()
     {
         $post = Post::factory()->create();
-        config()->set('formations.testing-policies.forceDelete', false);
+        $this->updateAbilities([]);
         $this->delete("posts/$post->id/force-delete")->assertForbidden();
-        config()->set('formations.testing-policies.forceDelete', true);
-        $this->delete("posts/$post->id/force-delete")->assertOk();
+        $this->updateAbilities(['forceDelete']);
+        $this->delete("posts/$post->id/force-delete")->assertRedirect();
     }
 }
