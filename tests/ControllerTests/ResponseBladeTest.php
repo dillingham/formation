@@ -39,7 +39,7 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(View::class, $create);
         $this->assertEquals('testing::posts.create', $create->name());
-        $this->assertEmpty($create->getData());
+        $this->assertEquals('populated from extra method', $create->getData()['extra']);
     }
 
     public function test_show_blade_responses()
@@ -78,8 +78,9 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(View::class, $edit);
         $this->assertEquals('testing::posts.edit', $edit->name());
-        $this->assertArrayHasKey('post', $edit->getData());
-        $this->assertEquals('Hello World', $edit->getData()['post']->title);
+        $this->assertArrayHasKey('id', $edit->getData());
+        $this->assertEquals($post->id, $edit->getData()['id']);
+        $this->assertEquals('populated from override method', $edit->getData()['override']);
     }
 
     public function test_update_blade_responses()

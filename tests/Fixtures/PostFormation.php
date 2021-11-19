@@ -50,6 +50,21 @@ class PostFormation extends Formation
         ];
     }
 
+    public function editData($model): array
+    {
+        return [
+            'id' => $model->id,
+            'override' => 'populated from override method',
+        ];
+    }
+
+    public function extraCreateData(): array
+    {
+        return [
+            'extra' => 'populated from extra method',
+        ];
+    }
+
     public function filters():array
     {
         return [

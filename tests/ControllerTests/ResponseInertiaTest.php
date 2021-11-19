@@ -19,7 +19,7 @@ class ResponseInertiaTest extends TestCase
         Inertia::setRootView('testing::app');
     }
 
-    public function test_index_blade_responses()
+    public function test_index_inertia_responses()
     {
         Post::factory()->create(['title' => 'Hello World']);
 
@@ -37,7 +37,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals('Hello World', $view->getData()['page']['props']['posts']->data[0]->title);
     }
 
-    public function test_create_blade_responses()
+    public function test_create_inertia_responses()
     {
         $create = $this
             ->getResourceController()
@@ -51,10 +51,10 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals('testing::app', $view->name());
         $this->assertArrayHasKey('page', $view->getData());
         $this->assertEquals('Posts/Create', $view->getData()['page']['component']);
-        $this->assertEmpty($view->getData()['page']['props']);
+        $this->assertEquals('populated from extra method', $view->getData()['page']['props']['extra']);
     }
 
-    public function test_show_blade_responses()
+    public function test_show_inertia_responses()
     {
         $post = Post::factory()->create(['title' => 'Hello World']);
 
@@ -73,7 +73,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals('Hello World', $view->getData()['page']['props']['post']->data->title);
     }
 
-    public function test_store_blade_responses()
+    public function test_store_inertia_responses()
     {
         $post = Post::factory()->create();
 
@@ -85,7 +85,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals(url(route('posts.show', $post)), $store->getTargetUrl());
     }
 
-    public function test_edit_blade_responses()
+    public function test_edit_inertia_responses()
     {
         $post = Post::factory()->create(['title' => 'Hello World']);
 
@@ -101,10 +101,11 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals('testing::app', $view->name());
         $this->assertArrayHasKey('page', $view->getData());
         $this->assertEquals('Posts/Edit', $view->getData()['page']['component']);
-        $this->assertEquals('Hello World', $view->getData()['page']['props']['post']->data->title);
+        $this->assertEquals($post->id, $view->getData()['page']['props']['id']);
+        $this->assertEquals('populated from override method', $view->getData()['page']['props']['override']);
     }
 
-    public function test_update_blade_responses()
+    public function test_update_inertia_responses()
     {
         $post = Post::factory()->create();
 
@@ -116,7 +117,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals(url(route('posts.show', $post)), $update->getTargetUrl());
     }
 
-    public function test_destroy_blade_responses()
+    public function test_destroy_inertia_responses()
     {
         $post = Post::factory()->create();
 
@@ -128,7 +129,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals(url(route('posts.index')), $destroy->getTargetUrl());
     }
 
-    public function test_restore_blade_responses()
+    public function test_restore_inertia_responses()
     {
         $post = Post::factory()->create();
 
@@ -140,7 +141,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertEquals(url(route('posts.show', $post)), $restore->getTargetUrl());
     }
 
-    public function test_force_delete_blade_responses()
+    public function test_force_delete_inertia_responses()
     {
         $post = Post::factory()->create();
 

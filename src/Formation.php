@@ -16,6 +16,9 @@ use Illuminate\Support\Str;
 
 class Formation extends FormRequest
 {
+    use Concerns\HasData;
+    use Concerns\HasQueries;
+
     /**
      * The model instance.
      *
@@ -187,24 +190,13 @@ class Formation extends FormRequest
         $this->applyDefaults();
 
         $query = app($this->model)->query();
-        $query = $this->scope($query);
+        $this->indexQuery($query);
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
         $query = $this->applySelect($query);
         $query = $this->applyFilters($query);
         $query = $this->applyConditions($query);
 
-        return $query;
-    }
-
-   /**
-     * Define the scope.
-     *
-     * @param mixed $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scope($query)
-    {
         return $query;
     }
 

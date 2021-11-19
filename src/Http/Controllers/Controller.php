@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -118,6 +119,10 @@ class Controller extends BaseController
             $query->withTrashed();
         }
 
+        $method = Route::current()->getActionMethod();
+
+        $this->formation()->queryCallback($method, $query);
+
         return $query->firstOrFail();
     }
 
@@ -162,7 +167,10 @@ class Controller extends BaseController
 
     public function apiResponse($type, $props = null)
     {
-        return $this->transform($props);
+        $data = $this->responseData($type, [], $props);
+
+        return $this->transform($data);
+
     }
 
     public function inertiaResponse($type, $props = null)
@@ -175,20 +183,20 @@ class Controller extends BaseController
             $term = 'resource.camel';
         }
 
+        $data = [];
+
         if ($term) {
-            $props = [
-                $this->terms($term) => $this->transform($props),
-            ];
+            $data = [ $this->terms($term) => $this->transform($props) ];
         }
 
-        $props = is_null($props) ? [] : $props;
+        $data = $this->responseData($type, $data, $props);
 
         $view = $this->terms('resource.studlyPlural').'/'.ucfirst($type);
 
-        return Inertia::render($view, $props);
+        return Inertia::render($view, $data);
     }
 
-    public function bladeResponse($type, $props = null):string
+    public function bladeResponse($type, $props = null): mixed
     {
         $view = $this->terms('resource.slugPlural').'.'.$type;
 
@@ -196,10 +204,21 @@ class Controller extends BaseController
             $view = "testing::$view";
         }
 
-        return view($view)->with(
-            $this->terms('resource.slugPlural').'.'.$type,
-            $props
-        );
+        $data = [];
+
+        if($type === 'index') {
+            $data = [ $this->terms('resource.slugPlural') => $props];
+        } else if (in_array($type, ['show', 'edit'])) {
+            $data = [ $this->terms('resource.slug') => $props];
+        }
+
+        $data = $this->responseData($type, $data, $props);
+
+        if(is_null($data)) {
+            return View::make($view);
+        }
+
+        return View::make($view)->with($data);
     }
 
     public function redirectResponse($type, $props): RedirectResponse
@@ -214,6 +233,13 @@ class Controller extends BaseController
         return redirect()->route(
             $this->route('index'),
         );
+    }
+
+    public function responseData($method, $data, $props = null)
+    {
+        return $this
+            ->formation()
+            ->getResponseData($method, $data, $props);
     }
 
     public function shouldRedirect($type): bool
