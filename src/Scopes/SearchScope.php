@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation;
+namespace Dillingham\Formation\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;

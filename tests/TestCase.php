@@ -3,9 +3,12 @@
 namespace Dillingham\Formation\Tests;
 
 use Dillingham\Formation\FormationProvider;
+use Dillingham\Formation\Http\Controllers\Controller;
+use Dillingham\Formation\Manager;
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\TestProvider;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -30,7 +33,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        if(! $this->useMysql) {
+        if (! $this->useMysql) {
             $app['config']->set('database.default', 'sqlite');
             $app['config']->set('database.connections.sqlite', [
                 'driver' => 'sqlite',
@@ -65,10 +68,43 @@ class TestCase extends Orchestra
             'name' => 'User',
             'email' => 'user@example.com',
             'password' => '$2y$10$MTibKZXWRvtO2gWpfpsngOp6FQXWUhHPTF9flhsaPdWvRtsyMUlC2',
+            'permissions' => json_encode(['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete']),
         ]);
 
         $this->actingAs($user);
 
         return $user;
+    }
+
+    public function updateAbilities(array $ability)
+    {
+        Auth::user()->update(['permissions' => json_encode($ability)]);
+    }
+
+    protected function getResourceController(): Controller
+    {
+        $controller = new Controller(new Manager());
+
+        // TODO: move this to a shared class
+        // avoid changing in two places or false positives
+
+        $controller->current = [
+            'formation' => PostFormation::class,
+            'resource' => 'posts',
+            'resource_route_key' => 'post',
+            'routes' => [
+                ['type' => 'index', 'key' => 'posts.index'],
+                ['type' => 'show', 'key' => 'posts.show'],
+                ['type' => 'create', 'key' => 'posts.create'],
+                ['type' => 'store', 'key' => 'posts.store'],
+                ['type' => 'edit', 'key' => 'posts.edit'],
+                ['type' => 'update', 'key' => 'posts.update'],
+                ['type' => 'delete', 'key' => 'posts.delete'],
+                ['type' => 'restore', 'key' => 'posts.restore'],
+                ['type' => 'forceDelete', 'key' => 'posts.forceDelete'],
+            ],
+        ];
+
+        return $controller;
     }
 }

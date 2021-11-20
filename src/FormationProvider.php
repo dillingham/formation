@@ -2,12 +2,10 @@
 
 namespace Dillingham\Formation;
 
-use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Console\Events\CommandStarting;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Event;
+use Dillingham\Formation\Commands\FormationMakeCommand;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Support\Str;
 
 class FormationProvider extends ServiceProvider
 {
@@ -23,7 +21,12 @@ class FormationProvider extends ServiceProvider
                 FormationMakeCommand::class,
             ]);
         }
-        $this->mergeConfigFrom( __DIR__.'/../config/formations.php', 'formations');
+
+        $this->app->singleton(Manager::class, function () {
+            return new Manager();
+        });
+
+        $this->mergeConfigFrom(__DIR__.'/../config/formations.php', 'formations');
     }
 
     /**
@@ -34,7 +37,22 @@ class FormationProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/formations.php' => config_path('formations.php')
+            __DIR__.'/../config/formations.php' => config_path('formations.php'),
         ], 'formations');
+
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'formations');
+
+
+        Route::macro('formation', function ($resource, $formation, array $routes = []) {
+            $routes = (new Routing($resource, $formation, $routes, $this->getLastGroupPrefix()))->create($this);
+            $resourceRouteKey = (string) Str::of($resource)->replace('-', '_')->singular();
+
+            app(Manager::class)->register([
+                'formation' => $formation,
+                'resource' => $resource,
+                'routes' => $routes,
+                'resource_route_key' => $resourceRouteKey,
+            ]);
+        });
     }
 }

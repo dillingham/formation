@@ -2,6 +2,10 @@
 
 namespace Dillingham\Formation\Tests\Fixtures;
 
+use Dillingham\Formation\Tests\Fixtures\Models\Post;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class TestProvider extends ServiceProvider
@@ -23,6 +27,12 @@ class TestProvider extends ServiceProvider
      */
     public function boot()
     {
+        Model::unguard();
+
+        Gate::policy(Post::class, PostPolicy::class);
+
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+
+        $this->loadViewsFrom(__DIR__.'/Views', 'testing');
     }
 }

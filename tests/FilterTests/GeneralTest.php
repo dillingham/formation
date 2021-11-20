@@ -1,6 +1,6 @@
 <?php
 
-namespace Dillingham\Formation\Tests;
+namespace Dillingham\Formation\Tests\FilterTests;
 
 use Dillingham\Formation\Exceptions\ReservedException;
 use Dillingham\Formation\Exceptions\UnauthorizedException;
@@ -9,14 +9,14 @@ use Dillingham\Formation\Formation;
 use Dillingham\Formation\Tests\Fixtures\Models\Comment;
 use Dillingham\Formation\Tests\Fixtures\Models\Like;
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
-use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\Models\Tag;
-use Exception;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-class FormationTest extends TestCase
+class GeneralTest extends TestCase
 {
     use RefreshDatabase;
 

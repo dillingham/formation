@@ -4,6 +4,7 @@ namespace Dillingham\Formation;
 
 use Dillingham\Formation\Exceptions\ReservedException;
 use Dillingham\Formation\Exceptions\UnauthorizedException;
+use Dillingham\Formation\Scopes\SearchScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;

@@ -1,9 +1,10 @@
 <?php
 
-namespace Dillingham\Formation\Tests;
+namespace Dillingham\Formation\Tests\FilterTests;
 
-use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 
@@ -107,7 +108,6 @@ class BoundsTest extends TestCase
             ->assertJsonPath('data.0.id', $building->id);
     }
 
-
     public function test_filtering_bounds_south_east()
     {
         $building = Post::create([
@@ -136,5 +136,4 @@ class BoundsTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $building->id);
     }
-
 }

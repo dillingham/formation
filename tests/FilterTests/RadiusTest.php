@@ -1,9 +1,10 @@
 <?php
 
-namespace Dillingham\Formation\Tests;
+namespace Dillingham\Formation\Tests\FilterTests;
 
-use Dillingham\Formation\Tests\Fixtures\PostFormation;
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
+use Dillingham\Formation\Tests\Fixtures\PostFormation;
+use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Support\Facades\Route;
 
 class RadiusTest extends TestCase
@@ -51,17 +52,17 @@ class RadiusTest extends TestCase
     {
         $this->get('posts?distance=2&longitude=-73.97552835820437')
             ->assertSessionHasErrors([
-                'latitude' => 'The latitude field is required when longitude / distance is present.'
+                'latitude' => 'The latitude field is required when longitude / distance is present.',
             ]);
 
         $this->get('posts?distance=1.1712&latitude=40.75178128662803')
             ->assertSessionHasErrors([
-                'longitude' => 'The longitude field is required when latitude / distance is present.'
+                'longitude' => 'The longitude field is required when latitude / distance is present.',
             ]);
 
         $this->get('posts?latitude=40.76850772506696&longitude=-73.97186950177363')
             ->assertSessionHasErrors([
-                'distance' => 'The distance field is required when longitude / latitude is present.'
+                'distance' => 'The distance field is required when longitude / latitude is present.',
             ]);
     }
 
@@ -71,7 +72,7 @@ class RadiusTest extends TestCase
             ->assertSessionHasErrors([
                 'latitude' => 'The latitude must be a number.',
                 'longitude' => 'The longitude must be a number.',
-                'distance' => 'The distance must be a number.'
+                'distance' => 'The distance must be a number.',
             ]);
     }
 
@@ -79,7 +80,7 @@ class RadiusTest extends TestCase
     {
         $this->get('posts?distance=101&latitude=40.76850772506696&longitude=-73.97186950177363')
             ->assertSessionHasErrors([
-                'distance' => 'The distance must be less than or equal 100.'
+                'distance' => 'The distance must be less than or equal 100.',
             ]);
     }
 }

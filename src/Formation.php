@@ -2,7 +2,12 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Http\Requests\CreateRequest;
+use Dillingham\Formation\Http\Resources\Resource;
+use Dillingham\Formation\Http\Requests\UpdateRequest;
 use Dillingham\Formation\Exceptions\PageExceededException;
+use Dillingham\Formation\Http\Controllers\ResourceController;
+use Dillingham\Formation\Scopes\SearchScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -11,12 +16,43 @@ use Illuminate\Support\Str;
 
 class Formation extends FormRequest
 {
+    use Concerns\HasData;
+    use Concerns\HasQueries;
+
     /**
      * The model instance.
      *
      * @var Model
      */
     public $model;
+
+    /**
+     * The resource controller.
+     *
+     * @var string
+     */
+    public $controller = ResourceController::class;
+
+    /**
+     * The default create request.
+     *
+     * @var string
+     */
+    public $create = CreateRequest::class;
+
+    /**
+     * The default update request.
+     *
+     * @var string
+     */
+    public $update = UpdateRequest::class;
+
+    /**
+     * The default api resource.
+     *
+     * @var string
+     */
+    public $resource = Resource::class;
 
     /**
      * The select option display column.
@@ -154,24 +190,13 @@ class Formation extends FormRequest
         $this->applyDefaults();
 
         $query = app($this->model)->query();
-        $query = $this->scope($query);
+        $this->indexQuery($query);
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
         $query = $this->applySelect($query);
         $query = $this->applyFilters($query);
         $query = $this->applyConditions($query);
 
-        return $query;
-    }
-
-   /**
-     * Define the scope.
-     *
-     * @param mixed $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scope($query)
-    {
         return $query;
     }
 
@@ -339,6 +364,22 @@ class Formation extends FormRequest
     {
         return [];
     }
+
+    public function rulesForIndexing(): array
+    {
+        return [];
+    }
+
+    public function rulesForCreating(): array
+    {
+        return [];
+    }
+
+    public function rulesForUpdating(): array
+    {
+        return [];
+    }
+
 
     public function filters(): array
     {

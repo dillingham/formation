@@ -36,6 +36,35 @@ class PostFormation extends Formation
         ];
     }
 
+    public function rulesForCreating(): array
+    {
+        return [
+            'title' => ['required']
+        ];
+    }
+
+    public function rulesForUpdating(): array
+    {
+        return [
+            'title' => ['required', 'min:10']
+        ];
+    }
+
+    public function editData($model): array
+    {
+        return [
+            'id' => $model->id,
+            'override' => 'populated from override method',
+        ];
+    }
+
+    public function extraCreateData(): array
+    {
+        return [
+            'extra' => 'populated from extra method',
+        ];
+    }
+
     public function filters():array
     {
         return [
@@ -73,14 +102,14 @@ class PostFormation extends Formation
                 }),
 
             Filter::make('length-range', 'length')
-                ->between('small', [1,10])
-                ->between('medium', [11,20])
-                ->between('large', [21,30]),
+                ->between('small', [1, 10])
+                ->between('medium', [11, 20])
+                ->between('large', [21, 30]),
 
             Filter::make('length-range', 'length')
-                ->between('small', [1,10])
-                ->between('medium', [11,20])
-                ->between('large', [21,30]),
+                ->between('small', [1, 10])
+                ->between('medium', [11, 20])
+                ->between('large', [21, 30]),
 
             Filter::make('money', 'length')->asCents(),
 
