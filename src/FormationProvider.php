@@ -40,6 +40,9 @@ class FormationProvider extends ServiceProvider
             __DIR__.'/../config/formations.php' => config_path('formations.php'),
         ], 'formations');
 
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'formations');
+
+
         Route::macro('formation', function ($resource, $formation, array $routes = []) {
             $routes = (new Routing($resource, $formation, $routes, $this->getLastGroupPrefix()))->create($this);
             $resourceRouteKey = (string) Str::of($resource)->replace('-', '_')->singular();

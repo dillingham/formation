@@ -19,6 +19,8 @@ class ResponseBladeTest extends TestCase
 
     public function test_index_blade_responses()
     {
+        $this->startSession();
+
         Post::factory()->create(['title' => 'Hello World']);
 
         $index = $this->getResourceController()
@@ -29,10 +31,15 @@ class ResponseBladeTest extends TestCase
         $this->assertArrayHasKey('posts', $index->getData());
         $this->assertInstanceOf(LengthAwarePaginator::class, $index->getData()['posts']);
         $this->assertEquals('Hello World', $index->getData()['posts']->first()->title);
+        $this->assertEmpty(session()->get('flash'));
+
+        $this->flushSession();
     }
 
     public function test_create_blade_responses()
     {
+        $this->startSession();
+
         $create = $this
             ->getResourceController()
             ->response('create');
@@ -40,10 +47,15 @@ class ResponseBladeTest extends TestCase
         $this->assertInstanceOf(View::class, $create);
         $this->assertEquals('testing::posts.create', $create->name());
         $this->assertEquals('populated from extra method', $create->getData()['extra']);
+        $this->assertEmpty(session()->get('flash'));
+
+        $this->flushSession();
     }
 
     public function test_show_blade_responses()
     {
+        $this->startSession();
+
         $post = Post::factory()->create(['title' => 'Hello World']);
 
         $show = $this
@@ -54,11 +66,16 @@ class ResponseBladeTest extends TestCase
         $this->assertEquals('testing::posts.show', $show->name());
         $this->assertArrayHasKey('post', $show->getData());
         $this->assertEquals('Hello World', $show->getData()['post']->title);
+        $this->assertEmpty(session()->get('flash'));
+
+        $this->flushSession();
     }
 
     public function test_store_blade_responses()
     {
-        $post = Post::factory()->create();
+        $this->startSession();
+
+        $post = Post::factory()->create(['title' => 'Hello World']);
 
         $store = $this
             ->getResourceController()
@@ -66,10 +83,16 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $store);
         $this->assertEquals(url(route('posts.show', $post)), $store->getTargetUrl());
+        $this->assertEquals('store', session()->get('flash.type'));
+        $this->assertEquals('Created: Hello World', session()->get('flash.message'));
+
+        $this->flushSession();
     }
 
     public function test_edit_blade_responses()
     {
+        $this->startSession();
+
         $post = Post::factory()->create(['title' => 'Hello World']);
 
         $edit = $this
@@ -81,11 +104,16 @@ class ResponseBladeTest extends TestCase
         $this->assertArrayHasKey('id', $edit->getData());
         $this->assertEquals($post->id, $edit->getData()['id']);
         $this->assertEquals('populated from override method', $edit->getData()['override']);
+        $this->assertEmpty(session()->get('flash'));
+
+        $this->flushSession();
     }
 
     public function test_update_blade_responses()
     {
-        $post = Post::factory()->create();
+        $this->startSession();
+
+        $post = Post::factory()->create(['title' => 'Hello World']);
 
         $update = $this
             ->getResourceController()
@@ -93,11 +121,17 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $update);
         $this->assertEquals(url(route('posts.show', $post)), $update->getTargetUrl());
+        $this->assertEquals('update', session()->get('flash.type'));
+        $this->assertEquals('Updated: Hello World', session()->get('flash.message'));
+
+        $this->flushSession();
     }
 
     public function test_destroy_blade_responses()
     {
-        $post = Post::factory()->create();
+        $this->startSession();
+
+        $post = Post::factory()->create(['title' => 'Hello World']);
 
         $destroy = $this
             ->getResourceController()
@@ -105,11 +139,17 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $destroy);
         $this->assertEquals(url(route('posts.index')), $destroy->getTargetUrl());
+        $this->assertEquals('destroy', session()->get('flash.type'));
+        $this->assertEquals('Deleted: Hello World', session()->get('flash.message'));
+
+        $this->flushSession();
     }
 
     public function test_restore_blade_responses()
     {
-        $post = Post::factory()->create();
+        $this->startSession();
+
+        $post = Post::factory()->create(['title' => 'Hello World']);
 
         $restore = $this
             ->getResourceController()
@@ -117,11 +157,17 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $restore);
         $this->assertEquals(url(route('posts.show', $post)), $restore->getTargetUrl());
+        $this->assertEquals('restore', session()->get('flash.type'));
+        $this->assertEquals('Restored: Hello World', session()->get('flash.message'));
+
+        $this->flushSession();
     }
 
     public function test_force_delete_blade_responses()
     {
-        $post = Post::factory()->create();
+        $this->startSession();
+
+        $post = Post::factory()->create(['title' => 'Hello World']);
 
         $forceDelete = $this
             ->getResourceController()
@@ -129,5 +175,9 @@ class ResponseBladeTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $forceDelete);
         $this->assertEquals(url(route('posts.index')), $forceDelete->getTargetUrl());
+        $this->assertEquals('force-delete', session()->get('flash.type'));
+        $this->assertEquals('Permanently Deleted: Hello World', session()->get('flash.message'));
+
+        $this->flushSession();
     }
 }

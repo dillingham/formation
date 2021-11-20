@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -146,6 +147,10 @@ class Controller extends BaseController
 
     public function response(string $type, $props = null): mixed
     {
+        if($this->shouldFlash($type)) {
+            $this->flash($type, $props);
+        }
+
         if ($this->shouldRedirect($type)) {
             return $this->redirectResponse($type, $props);
         }
@@ -254,6 +259,18 @@ class Controller extends BaseController
         ]);
     }
 
+    public function shouldFlash($type): bool
+    {
+        if (config('formations.mode') === 'api') {
+            return false;
+        }
+
+        return in_array($type, [
+            'store', 'update', 'restore',
+            'destroy', 'force-delete',
+        ]);
+    }
+
     public function terms($key = null)
     {
         if (empty($this->terms)) {
@@ -261,6 +278,18 @@ class Controller extends BaseController
         }
 
         return Arr::get($this->terms, $key);
+    }
+
+    public function flash($type, $resource)
+    {
+        $display = $this->formation()->display;
+        $display = Arr::get($resource, $display, 'a resource');
+        $message = trans('formations::flash.'. $type, ['resource' => $display]);
+
+        Session::flash('flash', [
+            'type' => $type,
+            'message' => $message,
+        ]);
     }
 
     protected function getTerms($resource)
