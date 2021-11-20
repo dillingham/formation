@@ -67,7 +67,7 @@ class ResourceController extends Controller
 
         $resource->delete();
 
-        return $this->response('destroy');
+        return $this->response('destroy', $resource);
     }
 
     public function restore()
@@ -89,6 +89,6 @@ class ResourceController extends Controller
 
         $resource->forceDelete();
 
-        return $this->response('force-delete');
+        return $this->response('force-delete', $resource);
     }
 }
