@@ -371,8 +371,11 @@ class Controller extends BaseController
     public function redirectResponse($type, $props)
     {
         if (in_array($type, ['store', 'update', 'restore'])) {
+            if($this->resolvedParent) {
+                $props = [$this->resolvedParent, $props];
+            }
             $redirect = [
-                'url' => route($this->route('show'), $props->id),
+                'url' => route($this->route('show'), $props),
             ];
         } else {
             $redirect = [
