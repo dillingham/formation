@@ -25,7 +25,8 @@ class ResourceTest extends TestCase
 
         $this->get('posts')
             ->assertOk()
-            ->assertJsonPath('data.0.id', $post->id);
+            ->assertJsonCount(1, 'posts')
+            ->assertJsonPath('posts.0.id', $post->id);
     }
 
     public function test_searching_a_resource_index()
@@ -36,13 +37,15 @@ class ResourceTest extends TestCase
 
         $this->get('posts?search=find')
             ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $post->id);
+            ->assertJsonCount(1, 'posts')
+            ->assertJsonPath('posts.0.id', $post->id);
     }
 
     public function test_creating_a_resource()
     {
-        $this->get('posts/new')->assertOk();
+        $this->get('posts/new')
+            ->assertOk()
+            ->assertJsonPath('extra', 'populated from extra method');
     }
 
     public function test_storing_a_resource()
@@ -60,7 +63,7 @@ class ResourceTest extends TestCase
 
         $this->get("posts/$post->id")
             ->assertOk()
-            ->assertJsonPath('data.id', $post->id);
+            ->assertJsonPath('post.id', $post->id);
     }
 
     public function test_showing_a_deleted_resource()
@@ -71,7 +74,7 @@ class ResourceTest extends TestCase
 
         $this->get("posts/$post->id")
             ->assertOk()
-            ->assertJsonPath('data.id', $post->id);
+            ->assertJsonPath('post.id', $post->id);
     }
 
     public function test_editing_a_resource()
@@ -80,7 +83,8 @@ class ResourceTest extends TestCase
 
         $this->get("posts/$post->id/edit")
             ->assertOk()
-            ->assertJsonPath('data.id', $post->id);
+            ->assertJsonPath('post.id', $post->id)
+            ->assertJsonPath('override', 'populated from override method');
     }
 
     public function test_updating_a_resource()

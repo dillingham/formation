@@ -6,6 +6,7 @@ use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
 class ResponseBladeTest extends TestCase
@@ -87,6 +88,22 @@ class ResponseBladeTest extends TestCase
         $this->assertEquals('Created: Hello World', session()->get('flash.message'));
 
         $this->flushSession();
+    }
+
+    public function test_formation_mode_api_header_skips_redirect()
+    {
+        $this->authUser();
+
+        config()->set('formations.mode', 'blade');
+
+        $this->withHeader('Wants-Json', true);
+
+       $response = $this->post('posts/new', [
+            'title' => 'Blog title',
+        ]);
+
+       $response->assertCreated();
+       $response->assertJsonPath('post.title', 'Blog title');
     }
 
     public function test_edit_blade_responses()

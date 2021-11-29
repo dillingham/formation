@@ -2,13 +2,22 @@
 
 namespace Dillingham\Formation\Http\Controllers;
 
+use App\Http\Resources\AddressResource;
+use Dillingham\Formation\Http\Resources\Resource;
 use Dillingham\Formation\Manager;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +33,8 @@ class Controller extends BaseController
 
     public $terms = [];
 
+    protected $resolvedParent;
+
     protected $resolvedResource;
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -33,6 +44,7 @@ class Controller extends BaseController
         $this->middleware(function ($request, $next) use ($manager) {
             $this->current = $manager->current();
 
+            $this->resolveParentBinding();
             $this->resolveResourceBinding();
 
             return $next($request);
@@ -41,11 +53,8 @@ class Controller extends BaseController
 
     protected function resolveResourceBinding()
     {
-        $method = Route::current()->getActionMethod();
-
-        if (! in_array($method, ['index', 'create', 'store'])) {
+        if ($this->shouldResolveResource()) {
             $this->resolvedResource = $this->resource();
-
             Route::current()->setParameter(
                 $this->current['resource_route_key'],
                 $this->resolvedResource
@@ -53,9 +62,39 @@ class Controller extends BaseController
         }
     }
 
+    public function shouldResolveResource():bool
+    {
+        $method = $this->controllerMethod();
+
+        return ! in_array($method, ['index', 'create', 'store']);
+    }
+
+    protected function resolveParentBinding()
+    {
+        // TODO: determine IF should resolve // if exists etc
+
+        $this->resolvedParent = $this->parent();
+
+        if(! $this->resolvedParent) {
+            return;
+        }
+
+        Route::current()->setParameter(
+            $this->current['parent_route_key'],
+            $this->resolvedParent
+        );
+    }
+
     public function values()
     {
-        $method = Route::current()->getActionMethod();
+        $method = $this->controllerMethod();
+
+        if($this->resolvedParent) {
+            Request::merge([
+                $this->parentForeignKey()
+                => $this->resolvedParent->getKey()
+            ]);
+        }
 
         if($method === 'store') {
             $request = $this->createRequest();
@@ -67,6 +106,11 @@ class Controller extends BaseController
             $request->validateResolved();
             return $request->validated();
         }
+//        if($method === 'store' && count($this->createRequestRules())) {
+//            return $this->createRequest()->validated();
+//        } else if($method === 'update' && count($this->updateRequestRules())) {
+//            return $this->updateRequest()->validated();
+//        }
 
         return Request::all();
     }
@@ -90,17 +134,36 @@ class Controller extends BaseController
         return app($this->current['formation']);
     }
 
+    public function parentFormation()
+    {
+        $segments = Request::segments();
+
+        if($prefix = Route::getCurrentRoute()->getPrefix()) {
+            if($segments[0] == $prefix) {
+                unset($segments[0]);
+                $segments = array_values($segments);
+            }
+        }
+
+        return app(Manager::class)->formation($segments[0]);
+    }
+
     public function model()
     {
         return app($this->formation()->model);
     }
 
-    public function createRequest()
+    public function parentModel()
+    {
+        return app($this->parentFormation()->model);
+    }
+
+    public function createRequest(): FormRequest
     {
         return app($this->formation()->create);
     }
 
-    public function updateRequest()
+    public function updateRequest(): FormRequest
     {
         return app($this->formation()->update);
     }
@@ -116,13 +179,51 @@ class Controller extends BaseController
             $this->getResourceValue()
         );
 
-        if (Request::route()->allowsTrashedBindings()) {
-            $query->withTrashed();
+        if($this->resolvedParent) {
+            $query->where([
+                $this->parentForeignKey()
+                => $this->resolvedParent->getKey(),
+            ]);
         }
 
-        $method = Route::current()->getActionMethod();
+        if (Request::route()->allowsTrashedBindings()) {
+            $query = $query->withTrashed();
+        }
+
+        $method = $this->controllerMethod();
 
         $this->formation()->queryCallback($method, $query);
+
+        return $query->firstOrFail();
+    }
+
+    public function parent()
+    {
+        if(! app(Manager::class)->hasParent()) {
+            return null;
+        }
+
+        if ($this->resolvedParent) {
+            return $this->resolvedParent;
+        }
+
+        $query = $this->parentModel();
+
+        if (Request::route()->allowsTrashedBindings()
+            && method_exists($query, 'bootSoftDeletes')) {
+            $query = $query->withTrashed();
+        }
+
+        $query = $query->where(
+            $this->parentModel()->getKeyName(),
+            $this->getParentValue()
+        );
+
+        // TODO: determine if it should be showQuery
+        // or if it should be parentUpdateQuery()
+        // or should be both?
+//        $method = Route::current()->getActionMethod();
+//        $this->parentFormation()->queryCallback($method, $query);
 
         return $query->firstOrFail();
     }
@@ -134,18 +235,44 @@ class Controller extends BaseController
         return $route['key'];
     }
 
-    public function transform($attributes)
+    public function transform($attributes, $extra = [])
     {
-        $class = $this->formation()->resource;
-
-        if (is_a($attributes, LengthAwarePaginator::class, true)) {
-            return $class::collection($attributes);
-        }
-
-        return new $class($attributes);
+        return $this->applyResource(
+            $this->formation()->resource,
+            $attributes,
+            $extra,
+        );
     }
 
-    public function response(string $type, $props = null): mixed
+    public function transformParent($attributes)
+    {
+        return $this->applyResource(
+            $this->parentFormation()->resource,
+            $attributes,
+        );
+    }
+
+    protected function applyResource($resource, $attributes, $extra = [])
+    {
+        if($this->mode() === 'api' && $this->controllerMethod() == 'index') {
+            $resource::wrap($this->terms('resource.slugPlural'));
+        } else if($this->mode() === 'api') {
+            $resource::wrap($this->terms('resource.slug'));
+        }
+//        else if($this->mode() === 'inertia' && $this->controllerMethod() == 'index') {
+//            $class::wrap($this->terms('resource.camelPlural'));
+//        } else if($this->mode() === 'inertia') {
+//            $class::wrap($this->terms('resource.camel'));
+//        }
+
+        if (is_a($attributes, LengthAwarePaginator::class, true)) {
+            return $resource::collection($attributes)->additional($extra);
+        }
+
+        return $resource::make($attributes)->additional($extra);
+    }
+
+    public function response(string $type, $props = null)
     {
         if($this->shouldFlash($type)) {
             $this->flash($type, $props);
@@ -155,15 +282,11 @@ class Controller extends BaseController
             return $this->redirectResponse($type, $props);
         }
 
-        if (Request::hasHeader('Wants-Json')) {
+        if ($this->mode() === 'api') {
             return $this->apiResponse($type, $props);
         }
 
-        if (config('formations.mode') === 'api') {
-            return $this->apiResponse($type, $props);
-        }
-
-        if (config('formations.mode') === 'inertia') {
+        if ($this->mode() === 'inertia') {
             return $this->inertiaResponse($type, $props);
         }
 
@@ -172,10 +295,29 @@ class Controller extends BaseController
 
     public function apiResponse($type, $props = null)
     {
-        $data = $this->responseData($type, [], $props);
+        $data = $this->formation()->dataCallback($type, [], $props);
 
-        return $this->transform($data);
+        if($data === $props) {
+            $data = [];
+        }
 
+        if($this->resolvedParent) {
+            $extra = array_merge([
+                $this->parentKey() => $this->transformParent($this->resolvedParent)
+            ], $data);
+
+            if(is_a($props, AbstractPaginator::class)) {
+                return JsonResource::collection($props)->additional($extra);
+            } else if(is_a($props, Model::class)) {
+                return JsonResource::make($props)->additional($extra);
+            } else if(is_array($props)) {
+                return array_merge($props, $extra);
+            } else {
+                return $extra;
+            }
+        }
+
+        return $this->transform($props, $data);
     }
 
     public function inertiaResponse($type, $props = null)
@@ -194,7 +336,7 @@ class Controller extends BaseController
             $data = [ $this->terms($term) => $this->transform($props) ];
         }
 
-        $data = $this->responseData($type, $data, $props);
+        $data = $this->formation()->dataCallback($type, $data, $props);
 
         $view = $this->terms('resource.studlyPlural').'/'.ucfirst($type);
 
@@ -217,7 +359,7 @@ class Controller extends BaseController
             $data = [ $this->terms('resource.slug') => $props];
         }
 
-        $data = $this->responseData($type, $data, $props);
+        $data = $this->formation()->dataCallback($type, $data, $props);
 
         if(is_null($data)) {
             return View::make($view);
@@ -226,30 +368,28 @@ class Controller extends BaseController
         return View::make($view)->with($data);
     }
 
-    public function redirectResponse($type, $props): RedirectResponse
+    public function redirectResponse($type, $props)
     {
         if (in_array($type, ['store', 'update', 'restore'])) {
-            return redirect()->route(
-                $this->route('show'),
-                $props->id
-            );
+            $redirect = [
+                'url' => route($this->route('show'), $props->id),
+            ];
+        } else {
+            $redirect = [
+                'url' => route($this->route('index')),
+            ];
         }
 
-        return redirect()->route(
-            $this->route('index'),
-        );
-    }
+        if(Request::hasHeader('Show-Redirect-Url')) {
+            return response()->json($redirect);
+        }
 
-    public function responseData($method, $data, $props = null)
-    {
-        return $this
-            ->formation()
-            ->getResponseData($method, $data, $props);
+        return redirect()->to($redirect['url']);
     }
 
     public function shouldRedirect($type): bool
     {
-        if (config('formations.mode') === 'api') {
+        if ($this->mode() === 'api') {
             return false;
         }
 
@@ -261,7 +401,7 @@ class Controller extends BaseController
 
     public function shouldFlash($type): bool
     {
-        if (config('formations.mode') === 'api') {
+        if ($this->mode() === 'api') {
             return false;
         }
 
@@ -310,8 +450,42 @@ class Controller extends BaseController
         ];
     }
 
-    private function getResourceValue()
+    protected function parentKey()
     {
-        return Request::route($this->current['resource_route_key']);
+        return Arr::get($this->current, 'parent_route_key');
+    }
+
+    protected function resourceKey()
+    {
+        return Arr::get($this->current, 'resource_route_key');
+    }
+
+    protected function getParentValue()
+    {
+        return Request::route($this->parentKey());
+    }
+
+    protected function getResourceValue()
+    {
+        return Request::route($this->resourceKey());
+    }
+
+    protected function mode(): string
+    {
+        if(Request::hasHeader('Wants-Json')) {
+            return 'api';
+        }
+
+        return config('formations.mode', 'blade');
+    }
+
+    protected function parentForeignKey(): string
+    {
+        return $this->parentFormation()->getForeignKey();
+    }
+
+    protected function controllerMethod(): string
+    {
+        return Route::current()->getActionMethod();
     }
 }

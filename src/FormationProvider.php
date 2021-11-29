@@ -3,6 +3,7 @@
 namespace Dillingham\Formation;
 
 use Dillingham\Formation\Commands\FormationMakeCommand;
+use Dillingham\Formation\Http\Controllers\ResourceController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -42,17 +43,13 @@ class FormationProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'formations');
 
-
         Route::macro('formation', function ($resource, $formation, array $routes = []) {
-            $routes = (new Routing($resource, $formation, $routes, $this->getLastGroupPrefix()))->create($this);
-            $resourceRouteKey = (string) Str::of($resource)->replace('-', '_')->singular();
 
-            app(Manager::class)->register([
-                'formation' => $formation,
-                'resource' => $resource,
-                'routes' => $routes,
-                'resource_route_key' => $resourceRouteKey,
-            ]);
+            return app(Routing::class)
+                ->setResource($resource)
+                ->setFormation($formation)
+                ->setRoutes($routes)
+                ->create();
         });
     }
 }

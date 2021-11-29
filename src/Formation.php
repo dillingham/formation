@@ -2,15 +2,19 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Http\Controllers\NestedController;
 use Dillingham\Formation\Http\Requests\CreateRequest;
 use Dillingham\Formation\Http\Resources\Resource;
 use Dillingham\Formation\Http\Requests\UpdateRequest;
 use Dillingham\Formation\Exceptions\PageExceededException;
 use Dillingham\Formation\Http\Controllers\ResourceController;
 use Dillingham\Formation\Scopes\SearchScope;
+use http\Exception\BadMethodCallException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -32,6 +36,13 @@ class Formation extends FormRequest
      * @var string
      */
     public $controller = ResourceController::class;
+
+    /**
+     * The nested resource controller.
+     *
+     * @var string
+     */
+    public $nestedController = NestedController::class;
 
     /**
      * The default create request.
@@ -57,9 +68,16 @@ class Formation extends FormRequest
     /**
      * The select option display column.
      *
-     * @var array
+     * @var string
      */
     public $display = 'id';
+
+    /**
+     * The foreign key override..
+     *
+     * @var string
+     */
+    public $foreignKey;
 
     /**
      * Array of columns allowed to search by.
@@ -256,7 +274,15 @@ class Formation extends FormRequest
      */
     protected function applyConditions($query)
     {
-        return $query->where($this->conditions);
+        foreach($this->conditions as $key => $value) {
+            if(is_callable($value)) {
+                $value($query);
+            } else {
+                $query->where($key, $value);
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -391,6 +417,22 @@ class Formation extends FormRequest
         $this->conditions[$key] = $value;
 
         return $this;
+    }
+
+    public function nest(Formation $formation, $value): Formation
+    {
+        $this->where($formation->getForeignKey(), $value);
+
+        return $this;
+    }
+
+    public function getForeignKey()
+    {
+        if($this->foreignKey) {
+            return $this->foreignKey;
+        }
+
+        return app($this->model)->getForeignKey();
     }
 
     public function select(array $select): Formation

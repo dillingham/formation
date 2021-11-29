@@ -208,9 +208,9 @@ trait HasData
      * @param $method
      * @param $data
      * @param $props
-     * @return array
+     * @return mixed
      */
-    public function getResponseData($method, $data, $props)
+    public function dataCallback($method, $data, $props)
     {
         $method = Str::of($method)->camel();
 

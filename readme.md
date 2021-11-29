@@ -393,7 +393,7 @@ Filter::make('with-deleted')->withTrashed(),
 ### onlyTrashed
 Results only include soft deleted
 ```php
-Filter::make('deleted')->onlyTrashed(),
+Filter::make('only-deleted')->onlyTrashed(),
 ```
 ```
 /articles?deleted=true

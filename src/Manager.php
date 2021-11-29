@@ -2,6 +2,7 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Exceptions\UnregisteredFormation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Request;
 
@@ -38,17 +39,48 @@ class Manager
      */
     public function register(array $resource)
     {
+        if($resource['parent'] && is_null($this->resource($resource['parent']))) {
+            throw new UnregisteredFormation();
+        }
+
         $this->resources[] = $resource;
+    }
+
+    /**
+     * Find a resource by key
+     *
+     * @param $key
+     * @return ?array
+     */
+    public function resource($key): ?array
+    {
+        foreach ($this->resources as $resource) {
+            if($resource['resource'] === $key) {
+                return $resource;
+            }
+        }
+
+        return null;
     }
 
     /**
      * The current formation object.
      *
-     * @return Formation
+     * @return Formation|null
      */
-    public function formation(): Formation
+    public function formation($key = null): ?Formation
     {
-        return app(Arr::get($this->current(), 'formation'));
+        if(is_null($key)) {
+            return app(Arr::get($this->current(), 'formation'));
+        }
+
+        foreach ($this->resources as $resource) {
+            if($resource['resource'] === $key) {
+                return app($resource['formation']);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -74,5 +106,10 @@ class Manager
         }
 
         return null;
+    }
+
+    public function hasParent()
+    {
+        return Arr::get($this->current(), 'parent') != null;
     }
 }
