@@ -135,7 +135,9 @@ class ArticleController
 ## Formation Routing
 Full resourceful controllers are available including soft delete endpoints. Use policies, form requests & api resources to control the behavior.
 ```php
+Route::formation('authors', AuthorFormation::class);
 Route::formation('articles', ArticleFormation::class);
+Route::formation('authors.articles', ArticleFormation::class);
 ```
 Then add the following class defintions to your formations:
 ```php
