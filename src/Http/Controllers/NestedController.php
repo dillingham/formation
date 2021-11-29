@@ -2,18 +2,18 @@
 
 namespace Dillingham\Formation\Http\Controllers;
 
-class ResourceController extends Controller
+class NestedController extends Controller
 {
     public function index()
     {
         $this->check('viewAny', $this->model());
 
-        $this->formation()->validateFilters();
+        $results = $this->formation()->nest(
+            $this->parentFormation(),
+            $this->parent()->getKey()
+        )->results();
 
-        return $this->response(
-            'index',
-            $this->formation()->results()
-        );
+        return $this->response('index', $results);
     }
 
     public function create()

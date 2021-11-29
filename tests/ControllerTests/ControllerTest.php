@@ -17,7 +17,6 @@ class ControllerTest extends TestCase
     {
         $resources = app(Manager::class)->all();
 
-        $this->assertCount(1, $resources);
         $this->assertEquals('posts', $resources[0]['resource']);
         $this->assertEquals(PostFormation::class, $resources[0]['formation']);
     }

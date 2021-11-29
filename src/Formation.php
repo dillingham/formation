@@ -2,6 +2,7 @@
 
 namespace Dillingham\Formation;
 
+use Dillingham\Formation\Http\Controllers\NestedController;
 use Dillingham\Formation\Http\Requests\CreateRequest;
 use Dillingham\Formation\Http\Resources\Resource;
 use Dillingham\Formation\Http\Requests\UpdateRequest;
@@ -11,10 +12,11 @@ use Dillingham\Formation\Scopes\SearchScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class Formation extends FormRequest
+class Formation
 {
     use Concerns\HasData;
     use Concerns\HasQueries;
@@ -32,6 +34,13 @@ class Formation extends FormRequest
      * @var string
      */
     public $controller = ResourceController::class;
+
+    /**
+     * The nested resource controller.
+     *
+     * @var string
+     */
+    public $nestedController = NestedController::class;
 
     /**
      * The default create request.
@@ -57,9 +66,16 @@ class Formation extends FormRequest
     /**
      * The select option display column.
      *
-     * @var array
+     * @var string
      */
     public $display = 'id';
+
+    /**
+     * The foreign key override..
+     *
+     * @var string
+     */
+    public $foreignKey;
 
     /**
      * Array of columns allowed to search by.
@@ -120,10 +136,12 @@ class Formation extends FormRequest
     /**
      * Build the query upon method injection.
      */
-    public function prepareForValidation()
+    public function validateFilters()
     {
-        $this->getValidatorInstance()
-            ->addRules($this->getInternalRules());
+        Validator::make(
+            Request::all(),
+            $this->getFilterRules()
+        )->validate();
     }
 
     /**
@@ -139,7 +157,7 @@ class Formation extends FormRequest
 
         $builder = $this->getBuilderInstance();
 
-        $perPage = $this->input('per_page', $builder->getModel()->getPerPage());
+        $perPage = Request::input('per_page', $builder->getModel()->getPerPage());
 
         if ($perPage > $this->maxPerPage) {
             $perPage = $this->maxPerPage;
@@ -161,7 +179,7 @@ class Formation extends FormRequest
      *
      * @var array
      */
-    protected function getInternalRules():array
+    protected function getFilterRules():array
     {
         $rules = [
             'search' => 'nullable|string|min:1|max:64',
@@ -170,8 +188,10 @@ class Formation extends FormRequest
             'sort-desc' => 'nullable|string|in:'.$this->getSortableKeys(),
         ];
 
+        $rules = array_merge($rules, $this->rulesForIndexing());
+
         foreach ($this->filters() as $filter) {
-            $filter->setRequest($this);
+            $filter->setRequest(request());
             foreach ($filter->getRules() as $key => $rule) {
                 $rules[$key] = $rule;
             }
@@ -209,8 +229,8 @@ class Formation extends FormRequest
     protected function applyDefaults()
     {
         foreach ($this->defaults as $key => $value) {
-            if (! $this->has($key)) {
-                $this->merge([$key => $value]);
+            if (! Request::has($key)) {
+                Request::merge([$key => $value]);
             }
         }
 
@@ -225,7 +245,7 @@ class Formation extends FormRequest
      */
     protected function applySearch($query)
     {
-        if ($term = $this->input('search')) {
+        if ($term = Request::input('search')) {
             $query = (new SearchScope())->apply($query, $this->search, $term);
         }
 
@@ -241,7 +261,7 @@ class Formation extends FormRequest
     protected function applyFilters($query)
     {
         foreach ($this->filters() as $filter) {
-            $filter->setRequest($this);
+            $filter->setRequest(request());
             $filter->apply($query);
         }
 
@@ -256,7 +276,15 @@ class Formation extends FormRequest
      */
     protected function applyConditions($query)
     {
-        return $query->where($this->conditions);
+        foreach($this->conditions as $key => $value) {
+            if(is_callable($value)) {
+                $value($query);
+            } else {
+                $query->where($key, $value);
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -320,14 +348,14 @@ class Formation extends FormRequest
             'alias' => null,
         ];
 
-        if ($this->filled('sort')) {
+        if (Request::filled('sort')) {
             $sortable = [
-                'column' => $this->input('sort'),
+                'column' => Request::input('sort'),
                 'direction'=> 'asc',
             ];
-        } elseif ($this->filled('sort-desc')) {
+        } elseif (Request::filled('sort-desc')) {
             $sortable = [
-                'column' => $this->input('sort-desc'),
+                'column' => Request::input('sort-desc'),
                 'direction'=> 'desc',
             ];
         }
@@ -355,14 +383,9 @@ class Formation extends FormRequest
 
     public function validatePagination($results)
     {
-        if (request()->input('page') > $results->lastPage()) {
+        if (Request::input('page') > $results->lastPage()) {
             throw new PageExceededException();
         }
-    }
-
-    public function rules(): array
-    {
-        return [];
     }
 
     public function rulesForIndexing(): array
@@ -391,6 +414,22 @@ class Formation extends FormRequest
         $this->conditions[$key] = $value;
 
         return $this;
+    }
+
+    public function nest(Formation $formation, $value): Formation
+    {
+        $this->where($formation->getForeignKey(), $value);
+
+        return $this;
+    }
+
+    public function getForeignKey()
+    {
+        if($this->foreignKey) {
+            return $this->foreignKey;
+        }
+
+        return app($this->model)->getForeignKey();
     }
 
     public function select(array $select): Formation

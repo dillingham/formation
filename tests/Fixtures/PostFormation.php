@@ -29,7 +29,7 @@ class PostFormation extends Formation
         'sort-desc' => 'body',
     ];
 
-    public function rules():array
+    public function rulesForIndexing():array
     {
         return [
             'rule_test' => 'nullable|in:allowed-value',
@@ -39,14 +39,16 @@ class PostFormation extends Formation
     public function rulesForCreating(): array
     {
         return [
-            'title' => ['required']
+            'title' => ['required'],
+            'author_id' => ['exists:users,id']
         ];
     }
 
     public function rulesForUpdating(): array
     {
         return [
-            'title' => ['required', 'min:10']
+            'title' => ['required', 'min:10'],
+            'author_id' => ['exists:users,id']
         ];
     }
 

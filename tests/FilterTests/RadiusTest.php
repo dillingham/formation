@@ -16,6 +16,7 @@ class RadiusTest extends TestCase
         parent::setUp();
 
         Route::get('/posts', function (PostFormation $request) {
+            $request->validateFilters();
             return $request->results();
         });
 
