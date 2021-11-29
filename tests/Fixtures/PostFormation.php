@@ -29,7 +29,7 @@ class PostFormation extends Formation
         'sort-desc' => 'body',
     ];
 
-    public function rules():array
+    public function rulesForIndexing():array
     {
         return [
             'rule_test' => 'nullable|in:allowed-value',

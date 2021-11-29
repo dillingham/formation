@@ -75,7 +75,7 @@ class ResponseInertiaTest extends TestCase
         $this->assertArrayHasKey('page', $view->getData());
         $this->assertEquals('Posts/Show', $view->getData()['page']['component']);
         // TODO: should the following be ->data?
-//        dd($view->getData()['page']['props']['post']->data);
+//        dd($view->getData()['page']['props']['post']);
         $this->assertEquals('Hello World', $view->getData()['page']['props']['post']->data->title);
     }
 

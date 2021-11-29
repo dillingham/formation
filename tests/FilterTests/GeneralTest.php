@@ -24,8 +24,9 @@ class GeneralTest extends TestCase
     {
         parent::setUp();
 
-        Route::get('/posts', function (PostFormation $request) {
-            return $request->results();
+        Route::get('/posts', function (PostFormation $formation) {
+            $formation->validateFilters();
+            return $formation->results();
         });
     }
 
@@ -98,7 +99,8 @@ class GeneralTest extends TestCase
     public function test_redirect_page_if_exceeds_total_pages()
     {
         $this->get('/posts?page=2&search=hello')
-            ->assertRedirect('/posts?page=1&search=hello');
+            ->assertRedirect('/posts?page=1&search=hello&sort-desc=body');
+            // sort comes from $defaults
     }
 
     public function test_sorting_invalid_key()
@@ -758,7 +760,7 @@ class GeneralTest extends TestCase
 
     public function test_rules_defined_on_request_class()
     {
-        $this->get('/posts?rule_test=not-allowed-value')
+        $this->get('/posts?rule_test=invalid-value')
             ->assertSessionHasErrors(['rule_test' => 'The selected rule test is invalid.']);
 
         session()->flush();
@@ -926,13 +928,6 @@ class GeneralTest extends TestCase
         $this->get('/posts?money=200')
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $two->id);
-    }
-
-    public function test_list_requests_have_defaults()
-    {
-        $request = (new Formation());
-        $this->assertEquals([], $request->rules());
-        $this->assertEquals([], $request->filters());
     }
 
     public function test_calling_results_twice_is_cached()
