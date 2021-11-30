@@ -8,7 +8,7 @@ class ResourceController extends Controller
     {
         $this->check('viewAny', $this->model());
 
-        $this->formation()->validateFilters();
+        $this->formation()->validate();
 
         return $this->response(
             'index',

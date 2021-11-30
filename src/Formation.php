@@ -22,6 +22,55 @@ class Formation
     use Concerns\HasQueries;
 
     /**
+     * The select option display column.
+     *
+     * @var string
+     */
+    public $display = 'id';
+
+    /**
+     * The foreign key override.
+     *
+     * @var string
+     */
+    public $foreignKey;
+
+    /**
+     * Array of columns allowed to search by.
+     *
+     * @var array
+     */
+    public $search = [];
+
+    /**
+     * Array of columns allowed to order by.
+     *
+     * @var array
+     */
+    public $sort = ['created_at'];
+
+    /**
+     * The maximum number of items per page.
+     *
+     * @var int
+     */
+    public $maxPerPage = 100;
+
+    /**
+     * The default parameters.
+     *
+     * @var mixed
+     */
+    public $defaults = [];
+
+    /**
+     * The select overrides.
+     *
+     * @var mixed
+     */
+    public $select = [];
+
+    /**
      * The model instance.
      *
      * @var Model
@@ -64,55 +113,6 @@ class Formation
     public $resource = Resource::class;
 
     /**
-     * The select option display column.
-     *
-     * @var string
-     */
-    public $display = 'id';
-
-    /**
-     * The foreign key override..
-     *
-     * @var string
-     */
-    public $foreignKey;
-
-    /**
-     * Array of columns allowed to search by.
-     *
-     * @var array
-     */
-    public $search = [];
-
-    /**
-     * Array of columns allowed to order by.
-     *
-     * @var array
-     */
-    public $sort = ['created_at'];
-
-    /**
-     * The maximum number of items per page.
-     *
-     * @var int
-     */
-    public $maxPerPage = 100;
-
-    /**
-     * The default parameters.
-     *
-     * @var mixed
-     */
-    public $defaults = [];
-
-    /**
-     * The select overrides.
-     *
-     * @var mixed
-     */
-    public $select = [];
-
-    /**
      * The results.
      *
      * @var mixed
@@ -136,7 +136,7 @@ class Formation
     /**
      * Build the query upon method injection.
      */
-    public function validateFilters()
+    public function validate()
     {
         Validator::make(
             Request::all(),
@@ -155,23 +155,27 @@ class Formation
             return $this->results;
         }
 
-        $builder = $this->getBuilderInstance();
+        $this->results = $this
+            ->newBuilder()
+            ->paginate($this->perPage())
+            ->withQueryString();
 
-        $perPage = Request::input('per_page', $builder->getModel()->getPerPage());
+        $this->validatePagination();
+
+        $this->wasRequested = true;
+
+        return $this->results;
+    }
+
+    public function perPage()
+    {
+        $perPage = Request::input('per_page', app($this->model)->getPerPage());
 
         if ($perPage > $this->maxPerPage) {
             $perPage = $this->maxPerPage;
         }
 
-        $this->results = $builder
-            ->paginate($perPage)
-            ->withQueryString();
-
-        $this->validatePagination($this->results);
-
-        $this->wasRequested = true;
-
-        return $this->results;
+        return $perPage;
     }
 
     /**
@@ -205,17 +209,18 @@ class Formation
      *
      * @return Builder
      */
-    private function getBuilderInstance()
+    private function newBuilder()
     {
         $this->applyDefaults();
 
         $query = app($this->model)->query();
-        $this->indexQuery($query);
         $query = $this->applySort($query);
         $query = $this->applySearch($query);
         $query = $this->applySelect($query);
         $query = $this->applyFilters($query);
         $query = $this->applyConditions($query);
+
+        $this->indexQuery($query);
 
         return $query;
     }
@@ -223,10 +228,9 @@ class Formation
     /**
      * Apply defaults to the request.
      *
-     * @var Builder
-     * @return $this
+     * @return self
      */
-    protected function applyDefaults()
+    protected function applyDefaults(): self
     {
         foreach ($this->defaults as $key => $value) {
             if (! Request::has($key)) {
@@ -381,9 +385,9 @@ class Formation
         return $sortable;
     }
 
-    public function validatePagination($results)
+    public function validatePagination()
     {
-        if (Request::input('page') > $results->lastPage()) {
+        if (Request::input('page') > $this->results->lastPage()) {
             throw new PageExceededException();
         }
     }
