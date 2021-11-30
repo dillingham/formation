@@ -136,7 +136,7 @@ class Formation
     /**
      * Build the query upon method injection.
      */
-    public function validateFilters()
+    public function validate()
     {
         Validator::make(
             Request::all(),
