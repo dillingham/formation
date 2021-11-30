@@ -25,7 +25,7 @@ class GeneralTest extends TestCase
         parent::setUp();
 
         Route::get('/posts', function (PostFormation $formation) {
-            $formation->validateFilters();
+            $formation->validate();
             return $formation->results();
         });
     }
