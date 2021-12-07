@@ -32,7 +32,7 @@ class Routing
         'edit' => ['GET', 'HEAD'],
         'update' => 'PUT',
         'destroy' => 'DELETE',
-        'restore' => 'POST',
+        'restore' => 'PUT',
         'force-delete' => 'DELETE',
     ];
 

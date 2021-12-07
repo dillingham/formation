@@ -85,9 +85,9 @@ class ResourceAuthorizationTest extends TestCase
     {
         $post = Post::factory()->create();
         $this->updateAbilities([]);
-        $this->post("posts/$post->id/restore")->assertForbidden();
+        $this->put("posts/$post->id/restore")->assertForbidden();
         $this->updateAbilities(['restore',]);
-        $this->post("posts/$post->id/restore")->assertRedirect();
+        $this->put("posts/$post->id/restore")->assertRedirect();
     }
 
     public function test_policy_for_force_deleting_a_resource()

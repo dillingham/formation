@@ -2,6 +2,7 @@
 
 namespace Dillingham\Formation\Tests\ControllerTests;
 
+use Dillingham\Formation\Manager;
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -117,7 +118,7 @@ class ResourceTest extends TestCase
 
         $post->delete();
 
-        $this->post("posts/$post->id/restore")->assertOk();
+        $this->put("posts/$post->id/restore")->assertOk();
 
         $this->assertCount(1, Post::all());
     }
