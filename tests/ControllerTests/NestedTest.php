@@ -3,6 +3,7 @@
 namespace Dillingham\Formation\Tests\ControllerTests;
 
 use Dillingham\Formation\Exceptions\UnregisteredFormation;
+use Dillingham\Formation\Manager;
 use Dillingham\Formation\Tests\Fixtures\Models\Post;
 use Dillingham\Formation\Tests\Fixtures\Models\User;
 use Dillingham\Formation\Tests\Fixtures\PostFormation;
@@ -160,7 +161,7 @@ class NestedTest extends TestCase
 
         $post->delete();
 
-        $this->post("authors/$post->author_id/posts/$post->id/restore")->assertOk();
+        $this->put("authors/$post->author_id/posts/$post->id/restore")->assertOk();
 
         $this->assertCount(1, Post::all());
     }
